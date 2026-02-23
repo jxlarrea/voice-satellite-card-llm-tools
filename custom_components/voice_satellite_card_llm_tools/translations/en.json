@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Configure LLM Extensions",
+        "title": "Configure Voice Satellite Card LLM Tools",
         "description": "Select your image search provider.",
         "data": {
           "image_search_provider": "Image Search Provider"
@@ -56,13 +56,13 @@
       }
     },
     "abort": {
-      "single_instance_allowed": "Only one instance of LLM Extensions is allowed."
+      "single_instance_allowed": "Only one instance of Voice Satellite Card LLM Tools is allowed."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "LLM Extensions Options",
+        "title": "Voice Satellite Card LLM Tools Options",
         "description": "Change your image search provider or settings.",
         "data": {
           "image_search_provider": "Image Search Provider"

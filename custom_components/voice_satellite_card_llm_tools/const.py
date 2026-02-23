@@ -1,11 +1,11 @@
-"""Constants for the LLM Extensions integration."""
+"""Constants for the Voice Satellite Card LLM Tools integration."""
 
-DOMAIN = "voice_satellite_llm_extensions"
-ADDON_NAME = "LLM Extensions"
+DOMAIN = "voice_satellite_card_llm_tools"
+ADDON_NAME = "Voice Satellite Card LLM Tools"
 
 # LLM API identifiers
 IMAGE_SEARCH_API_NAME = "Image Search Services"
-IMAGE_SEARCH_API_ID = "voice_satellite_llm_extensions_image_search"
+IMAGE_SEARCH_API_ID = "voice_satellite_card_llm_tools_image_search"
 
 IMAGE_SEARCH_SERVICES_PROMPT = (
     "You may use the Image Search Services tools to find images on the internet. "
@@ -14,7 +14,7 @@ IMAGE_SEARCH_SERVICES_PROMPT = (
 
 # Video Search LLM API identifiers
 VIDEO_SEARCH_API_NAME = "Video Search Services"
-VIDEO_SEARCH_API_ID = "voice_satellite_llm_extensions_video_search"
+VIDEO_SEARCH_API_ID = "voice_satellite_card_llm_tools_video_search"
 
 VIDEO_SEARCH_SERVICES_PROMPT = (
     "You may use the Video Search Services tools to find videos on YouTube. "

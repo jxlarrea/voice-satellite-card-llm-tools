@@ -1,4 +1,4 @@
-"""The LLM Extensions integration."""
+"""The Voice Satellite Card LLM Tools integration."""
 
 import logging
 
@@ -15,13 +15,13 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the LLM Extensions integration."""
+    """Set up the Voice Satellite Card LLM Tools integration."""
     hass.data.setdefault(DOMAIN, {})
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up LLM Extensions from a config entry."""
+    """Set up Voice Satellite Card LLM Tools from a config entry."""
     _LOGGER.info("Setting up %s for entry: %s", ADDON_NAME, entry.entry_id)
     config = {**entry.data, **(entry.options or {})}
     await setup_llm_api(hass, config)

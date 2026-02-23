@@ -1,4 +1,4 @@
-"""Config flow for LLM Extensions."""
+"""Config flow for Voice Satellite Card LLM Tools."""
 
 from __future__ import annotations
 
@@ -186,8 +186,8 @@ PROVIDER_STEP_MAP = {
 }
 
 
-class VoiceSatelliteLlmExtensionsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Config flow for LLM Extensions."""
+class VoiceSatelliteCardLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Config flow for Voice Satellite Card LLM Tools."""
 
     VERSION = 1
 
@@ -278,10 +278,10 @@ class VoiceSatelliteLlmExtensionsConfigFlow(config_entries.ConfigFlow, domain=DO
         config_entry: config_entries.ConfigEntry,
     ) -> config_entries.OptionsFlow:
         """Get the options flow handler."""
-        return VoiceSatelliteLlmExtensionsOptionsFlow(config_entry)
+        return VoiceSatelliteCardLlmToolsOptionsFlow(config_entry)
 
 
-class VoiceSatelliteLlmExtensionsOptionsFlow(config_entries.OptionsFlow):
+class VoiceSatelliteCardLlmToolsOptionsFlow(config_entries.OptionsFlow):
     """Options flow for reconfiguration."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
