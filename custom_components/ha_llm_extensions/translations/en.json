@@ -1,0 +1,91 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure LLM Extensions",
+        "description": "Select your image search provider.",
+        "data": {
+          "image_search_provider": "Image Search Provider"
+        }
+      },
+      "google": {
+        "title": "Configure Google Custom Search",
+        "description": "Enter your Google Custom Search API credentials.",
+        "data": {
+          "google_cse_api_key": "API Key",
+          "google_cse_cx": "Custom Search Engine ID (cx)",
+          "google_cse_num_results": "Default Number of Results"
+        },
+        "data_description": {
+          "google_cse_cx": "The unique identifier for your Programmable Search Engine"
+        }
+      },
+      "brave": {
+        "title": "Configure Brave Image Search",
+        "description": "Enter your Brave Search API credentials.",
+        "data": {
+          "brave_api_key": "API Key",
+          "brave_image_num_results": "Default Number of Results",
+          "brave_safesearch": "SafeSearch"
+        }
+      },
+      "searxng": {
+        "title": "Configure SearXNG Image Search",
+        "description": "Enter your SearXNG instance details.",
+        "data": {
+          "searxng_server_url": "Server URL",
+          "searxng_image_num_results": "Default Number of Results",
+          "searxng_engines": "Engines"
+        },
+        "data_description": {
+          "searxng_server_url": "Protocol, host, and port, e.g.: http://localhost:8080",
+          "searxng_engines": "Comma-separated list of image engines, e.g.: bing images,google images. Leave empty to use all enabled engines."
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Only one instance of LLM Extensions is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "LLM Extensions Options",
+        "description": "Change your image search provider or settings.",
+        "data": {
+          "image_search_provider": "Image Search Provider"
+        }
+      },
+      "google": {
+        "title": "Configure Google Custom Search",
+        "description": "Update your Google Custom Search API credentials.",
+        "data": {
+          "google_cse_api_key": "API Key",
+          "google_cse_cx": "Custom Search Engine ID (cx)",
+          "google_cse_num_results": "Default Number of Results"
+        }
+      },
+      "brave": {
+        "title": "Configure Brave Image Search",
+        "description": "Update your Brave Search API credentials.",
+        "data": {
+          "brave_api_key": "API Key",
+          "brave_image_num_results": "Default Number of Results",
+          "brave_safesearch": "SafeSearch"
+        }
+      },
+      "searxng": {
+        "title": "Configure SearXNG Image Search",
+        "description": "Update your SearXNG instance details.",
+        "data": {
+          "searxng_server_url": "Server URL",
+          "searxng_image_num_results": "Default Number of Results",
+          "searxng_engines": "Engines"
+        },
+        "data_description": {
+          "searxng_engines": "Comma-separated list of image engines, e.g.: bing images,google images. Leave empty to use all enabled engines."
+        }
+      }
+    }
+  }
+}

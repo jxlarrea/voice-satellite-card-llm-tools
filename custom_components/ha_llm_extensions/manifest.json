@@ -1,0 +1,14 @@
+{
+  "domain": "ha_llm_extensions",
+  "name": "LLM Extensions",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "version": "0.1.0",
+  "config_flow": true,
+  "dependencies": [],
+  "requirements": [],
+  "codeowners": [],
+  "documentation": "https://github.com/jxlarrea/ha-llm-extensions",
+  "issue_tracker": "https://github.com/jxlarrea/ha-llm-extensions/issues",
+  "loggers": ["custom_components.ha_llm_extensions"]
+}
