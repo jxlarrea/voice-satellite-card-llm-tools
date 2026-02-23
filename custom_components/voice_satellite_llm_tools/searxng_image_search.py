@@ -13,6 +13,8 @@ _LOGGER = logging.getLogger(__name__)
 class SearXNGImageSearchTool(BaseImageSearchTool):
     """Image search using a SearXNG instance."""
 
+    source = "searxng"
+
     def _get_configured_num_results(self) -> int:
         return int(self.config.get(CONF_SEARXNG_IMAGE_NUM_RESULTS, 3))
 

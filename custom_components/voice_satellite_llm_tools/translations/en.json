@@ -15,18 +15,6 @@
           "image_search_provider": "Image Search Provider"
         }
       },
-      "google": {
-        "title": "Configure Google Custom Search",
-        "description": "Enter your Google Custom Search API credentials.",
-        "data": {
-          "google_cse_api_key": "API Key",
-          "google_cse_cx": "Custom Search Engine ID (cx)",
-          "google_cse_num_results": "Default Number of Results"
-        },
-        "data_description": {
-          "google_cse_cx": "The unique identifier for your Programmable Search Engine"
-        }
-      },
       "brave": {
         "title": "Configure Brave Image Search",
         "description": "Enter your Brave Search API credentials.",
@@ -75,15 +63,6 @@
         "description": "Change your image search provider or settings.",
         "data": {
           "image_search_provider": "Image Search Provider"
-        }
-      },
-      "google": {
-        "title": "Configure Google Custom Search",
-        "description": "Update your Google Custom Search API credentials.",
-        "data": {
-          "google_cse_api_key": "API Key",
-          "google_cse_cx": "Custom Search Engine ID (cx)",
-          "google_cse_num_results": "Default Number of Results"
         }
       },
       "brave": {

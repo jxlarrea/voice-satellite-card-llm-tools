@@ -19,6 +19,8 @@ BRAVE_IMAGE_ENDPOINT = "https://api.search.brave.com/res/v1/images/search"
 class BraveImageSearchTool(BaseImageSearchTool):
     """Image search using Brave Image Search API."""
 
+    source = "brave"
+
     def _get_configured_num_results(self) -> int:
         return int(self.config.get(CONF_BRAVE_IMAGE_NUM_RESULTS, 3))
 

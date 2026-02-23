@@ -28,11 +28,10 @@ This integration registers additional **LLM API tools** with Home Assistant. Whe
 
 ### Image Search
 
-Search the internet for images using one of three supported providers:
+Search the internet for images using one of two supported providers:
 
 | Provider | Description |
 |----------|-------------|
-| **Google Custom Search** | Uses the [Google Custom Search JSON API](https://developers.google.com/custom-search/v1/overview). Requires an API key and a Programmable Search Engine ID (cx). |
 | **Brave Image Search** | Uses the [Brave Search API](https://brave.com/search/api/). Requires an API key. Supports configurable SafeSearch levels (off, moderate, strict). |
 | **SearXNG** | Uses a self-hosted [SearXNG](https://docs.searxng.org/) instance. No external API key required — just point it at your instance URL. Optionally specify which image engines to use. |
 
@@ -81,7 +80,7 @@ Each tool (Image Search, Video Search) is configured as a separate entry, so you
 1. Go to **Settings > Devices & Services > Add Integration**
 2. Search for **Voice Satellite Card LLM Tools**
 3. Select **Image Search** as the tool type
-4. Choose your image search provider (Google, Brave, or SearXNG)
+4. Choose your image search provider (Brave or SearXNG)
 5. Enter your provider credentials and configure the default number of results
 6. Go to your **Assist Pipeline** settings and enable the **Image Search Services** LLM API for your conversation agent
 
@@ -96,16 +95,6 @@ Each tool (Image Search, Video Search) is configured as a separate entry, so you
 > **Note:** Only one Image Search entry and one Video Search entry are allowed at a time. To change providers or settings, go to the entry's options flow (**Settings > Devices & Services > Voice Satellite Card LLM Tools > Configure**). To disable a tool, simply remove its entry.
 
 ## Provider Setup
-
-### Google Custom Search
-
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a project (or select an existing one)
-3. Enable the **Custom Search API**
-4. Create an API key under **APIs & Services > Credentials**
-5. Go to the [Programmable Search Engine](https://programmablesearchengine.google.com/) control panel
-6. Create a new search engine with **Search the entire web** enabled and **Image search** turned on
-7. Copy the **Search Engine ID (cx)**
 
 ### Brave Image Search
 
@@ -133,9 +122,8 @@ Each tool (Image Search, Video Search) is configured as a separate entry, so you
 
 | Option | Description |
 |--------|-------------|
-| **Image Search Provider** | Google, Brave, or SearXNG |
-| **API Key** | Provider API key (Google, Brave) |
-| **Search Engine ID (cx)** | Google Custom Search only — your Programmable Search Engine ID |
+| **Image Search Provider** | Brave or SearXNG |
+| **API Key** | Brave only — your Brave Search API key |
 | **Server URL** | SearXNG only — your instance URL |
 | **Engines** | SearXNG only — comma-separated list of image engines |
 | **SafeSearch** | Brave only — off, moderate, or strict |
@@ -158,7 +146,7 @@ Each tool (Image Search, Video Search) is configured as a separate entry, so you
 
 ### Search returns no results
 
-1. **Check API quotas:** Google Custom Search and YouTube APIs have daily quota limits. Check the [Google Cloud Console](https://console.cloud.google.com/) for quota usage.
+1. **Check API quotas:** Brave Search and YouTube APIs have daily quota limits. Check your provider's dashboard for quota usage.
 2. **Check SearXNG instance:** If using SearXNG, ensure the instance is running and reachable from Home Assistant.
 3. **Try a different query:** Some queries may not return results depending on the provider and search terms.
 

@@ -14,7 +14,7 @@ CONF_TOOL_TYPES = {
 }
 
 # LLM API identifiers
-IMAGE_SEARCH_API_NAME = "Image Search Services"
+IMAGE_SEARCH_API_NAME = "Voice Satellite Card: Image Search"
 IMAGE_SEARCH_API_ID = "voice_satellite_llm_tools_image_search"
 
 IMAGE_SEARCH_SERVICES_PROMPT = (
@@ -27,7 +27,7 @@ IMAGE_SEARCH_SERVICES_PROMPT = (
 )
 
 # Video Search LLM API identifiers
-VIDEO_SEARCH_API_NAME = "Video Search Services"
+VIDEO_SEARCH_API_NAME = "Voice Satellite Card: Video Search"
 VIDEO_SEARCH_API_ID = "voice_satellite_llm_tools_video_search"
 
 VIDEO_SEARCH_SERVICES_PROMPT = (
@@ -41,20 +41,13 @@ VIDEO_SEARCH_SERVICES_PROMPT = (
 
 # Provider selection
 CONF_IMAGE_SEARCH_PROVIDER = "image_search_provider"
-CONF_IMAGE_SEARCH_PROVIDER_GOOGLE = "Google"
 CONF_IMAGE_SEARCH_PROVIDER_BRAVE = "Brave"
 CONF_IMAGE_SEARCH_PROVIDER_SEARXNG = "SearXNG"
 
 CONF_IMAGE_SEARCH_PROVIDERS = {
-    "Google": CONF_IMAGE_SEARCH_PROVIDER_GOOGLE,
     "Brave": CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
     "SearXNG": CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
 }
-
-# Google Custom Search config keys
-CONF_GOOGLE_CSE_API_KEY = "google_cse_api_key"
-CONF_GOOGLE_CSE_CX = "google_cse_cx"
-CONF_GOOGLE_CSE_NUM_RESULTS = "google_cse_num_results"
 
 # Brave Image Search config keys
 CONF_BRAVE_API_KEY = "brave_api_key"
@@ -76,9 +69,6 @@ DEFAULT_CACHE_TTL = 3600  # 1 hour in seconds
 
 # Image search defaults
 IMAGE_SEARCH_DEFAULTS = {
-    CONF_GOOGLE_CSE_API_KEY: "",
-    CONF_GOOGLE_CSE_CX: "",
-    CONF_GOOGLE_CSE_NUM_RESULTS: 3,
     CONF_BRAVE_API_KEY: "",
     CONF_BRAVE_IMAGE_NUM_RESULTS: 3,
     CONF_BRAVE_SAFESEARCH: "moderate",

@@ -10,7 +10,6 @@ from .brave_image_search import BraveImageSearchTool
 from .const import (
     CONF_IMAGE_SEARCH_PROVIDER,
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
-    CONF_IMAGE_SEARCH_PROVIDER_GOOGLE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
     CONF_TOOL_TYPE,
     CONF_YOUTUBE_API_KEY,
@@ -24,7 +23,6 @@ from .const import (
     VIDEO_SEARCH_API_NAME,
     VIDEO_SEARCH_SERVICES_PROMPT,
 )
-from .google_image_search import GoogleImageSearchTool
 from .searxng_image_search import SearXNGImageSearchTool
 from .youtube_video_search import YouTubeVideoSearchTool
 
@@ -32,11 +30,6 @@ _LOGGER = logging.getLogger(__name__)
 
 # Maps a condition (lambda on config data) to a tool class
 IMAGE_SEARCH_TOOLS_MAP = [
-    (
-        lambda data: data.get(CONF_IMAGE_SEARCH_PROVIDER)
-        == CONF_IMAGE_SEARCH_PROVIDER_GOOGLE,
-        GoogleImageSearchTool,
-    ),
     (
         lambda data: data.get(CONF_IMAGE_SEARCH_PROVIDER)
         == CONF_IMAGE_SEARCH_PROVIDER_BRAVE,

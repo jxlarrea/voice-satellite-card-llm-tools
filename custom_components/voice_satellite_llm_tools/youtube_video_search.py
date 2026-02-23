@@ -28,6 +28,7 @@ YOUTUBE_VIDEOS_URL = "https://www.googleapis.com/youtube/v3/videos"
 class YouTubeVideoSearchTool(BaseTool):
     """Video search using YouTube Data API v3."""
 
+    source = "youtube"
     name = "search_videos"
     description = (
         "Search YouTube for videos matching a query. "
@@ -115,6 +116,7 @@ class YouTubeVideoSearchTool(BaseTool):
 
             if not results:
                 return {
+                    "source": self.source,
                     "query": query,
                     "results": [],
                     "auto_play": False,
@@ -215,6 +217,7 @@ class YouTubeVideoSearchTool(BaseTool):
     ) -> dict:
         """Format the search results into the LLM response structure."""
         return {
+            "source": self.source,
             "query": query,
             "num_results": len(results),
             "auto_play": auto_play,

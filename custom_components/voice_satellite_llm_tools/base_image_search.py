@@ -116,6 +116,7 @@ class BaseImageSearchTool(BaseTool):
 
             if not results:
                 return {
+                    "source": self.source,
                     "query": query,
                     "results": [],
                     "auto_display": False,
@@ -134,6 +135,7 @@ class BaseImageSearchTool(BaseTool):
     ) -> dict:
         """Format the search results into the LLM response structure."""
         return {
+            "source": self.source,
             "query": query,
             "num_results": len(results),
             "auto_display": auto_display,

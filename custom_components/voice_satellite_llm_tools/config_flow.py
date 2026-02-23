@@ -25,12 +25,8 @@ from .const import (
     CONF_BRAVE_API_KEY,
     CONF_BRAVE_IMAGE_NUM_RESULTS,
     CONF_BRAVE_SAFESEARCH,
-    CONF_GOOGLE_CSE_API_KEY,
-    CONF_GOOGLE_CSE_CX,
-    CONF_GOOGLE_CSE_NUM_RESULTS,
     CONF_IMAGE_SEARCH_PROVIDER,
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
-    CONF_IMAGE_SEARCH_PROVIDER_GOOGLE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
     CONF_IMAGE_SEARCH_PROVIDERS,
     CONF_SEARXNG_ENGINES,
@@ -52,7 +48,6 @@ _LOGGER = logging.getLogger(__name__)
 # Step identifiers
 STEP_USER = "user"
 STEP_IMAGE_PROVIDER = "image_provider"
-STEP_GOOGLE = "google"
 STEP_BRAVE = "brave"
 STEP_SEARXNG = "searxng"
 STEP_YOUTUBE = "youtube"
@@ -106,27 +101,6 @@ def get_image_provider_schema() -> vol.Schema:
                     options=_options_to_selections(CONF_IMAGE_SEARCH_PROVIDERS),
                 )
             ),
-        }
-    )
-
-
-def get_google_schema(defaults: dict | None = None) -> vol.Schema:
-    """Schema for Google Custom Search configuration."""
-    d = defaults or IMAGE_SEARCH_DEFAULTS
-    return vol.Schema(
-        {
-            vol.Required(
-                CONF_GOOGLE_CSE_API_KEY,
-                default=d.get(CONF_GOOGLE_CSE_API_KEY, ""),
-            ): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
-            vol.Required(
-                CONF_GOOGLE_CSE_CX,
-                default=d.get(CONF_GOOGLE_CSE_CX, ""),
-            ): str,
-            vol.Required(
-                CONF_GOOGLE_CSE_NUM_RESULTS,
-                default=d.get(CONF_GOOGLE_CSE_NUM_RESULTS, 3),
-            ): _num_results_selector(),
         }
     )
 
@@ -197,7 +171,6 @@ def get_youtube_schema(defaults: dict | None = None) -> vol.Schema:
 
 # Map provider to (step_id, schema_func)
 PROVIDER_STEP_MAP = {
-    CONF_IMAGE_SEARCH_PROVIDER_GOOGLE: (STEP_GOOGLE, get_google_schema),
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE: (STEP_BRAVE, get_brave_schema),
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG: (STEP_SEARXNG, get_searxng_schema),
 }
@@ -291,12 +264,6 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
         await self.async_set_unique_id(f"{DOMAIN}_image_search")
         self._abort_if_unique_id_configured()
         return self.async_create_entry(title=title, data=self.config_data)
-
-    async def async_step_google(
-        self, user_input: dict[str, Any] | None = None
-    ) -> config_entries.ConfigFlowResult:
-        """Configure Google Custom Search settings."""
-        return await self._handle_provider_step(STEP_GOOGLE, user_input)
 
     async def async_step_brave(
         self, user_input: dict[str, Any] | None = None
@@ -400,12 +367,6 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
             self.config_entry, title=title
         )
         return self.async_create_entry(data=self.config_data)
-
-    async def async_step_google(
-        self, user_input: dict[str, Any] | None = None
-    ) -> config_entries.ConfigFlowResult:
-        """Options: Google Custom Search settings."""
-        return await self._handle_provider_step(STEP_GOOGLE, user_input)
 
     async def async_step_brave(
         self, user_input: dict[str, Any] | None = None
