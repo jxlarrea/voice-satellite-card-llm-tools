@@ -12,12 +12,14 @@ from .const import (
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
     CONF_IMAGE_SEARCH_PROVIDER_GOOGLE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
+    CONF_TOOL_TYPE,
     CONF_YOUTUBE_API_KEY,
-    CONF_YOUTUBE_ENABLED,
     DOMAIN,
     IMAGE_SEARCH_API_ID,
     IMAGE_SEARCH_API_NAME,
     IMAGE_SEARCH_SERVICES_PROMPT,
+    TOOL_TYPE_IMAGE_SEARCH,
+    TOOL_TYPE_VIDEO_SEARCH,
     VIDEO_SEARCH_API_ID,
     VIDEO_SEARCH_API_NAME,
     VIDEO_SEARCH_SERVICES_PROMPT,
@@ -51,27 +53,21 @@ IMAGE_SEARCH_TOOLS_MAP = [
 class ImageSearchAPI(llm.API):
     """Image Search API for LLM integration."""
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, config_data: dict[str, Any]) -> None:
         """Initialize the Image Search API."""
         super().__init__(
             hass=hass,
             id=IMAGE_SEARCH_API_ID,
             name=IMAGE_SEARCH_API_NAME,
         )
+        self._config_data = config_data
 
     def get_enabled_tools(self) -> list:
         """Return list of tool instances for the configured provider."""
-        config_data = self.hass.data.get(DOMAIN, {}).get("config", {})
         tools = []
-
         for condition, tool_class in IMAGE_SEARCH_TOOLS_MAP:
-            enabled = False
-            if callable(condition):
-                enabled = condition(config_data)
-
-            if enabled:
-                tools.append(tool_class(config_data, self.hass))
-
+            if callable(condition) and condition(self._config_data):
+                tools.append(tool_class(self._config_data, self.hass))
         return tools
 
     async def async_get_api_instance(
@@ -90,25 +86,22 @@ class ImageSearchAPI(llm.API):
 class VideoSearchAPI(llm.API):
     """Video Search API for LLM integration."""
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, config_data: dict[str, Any]) -> None:
         """Initialize the Video Search API."""
         super().__init__(
             hass=hass,
             id=VIDEO_SEARCH_API_ID,
             name=VIDEO_SEARCH_API_NAME,
         )
+        self._config_data = config_data
 
     async def async_get_api_instance(
         self, llm_context: llm.LLMContext
     ) -> llm.APIInstance:
         """Return an API instance with the YouTube video search tool."""
-        config_data = self.hass.data.get(DOMAIN, {}).get("config", {})
         tools = []
-
-        if config_data.get(CONF_YOUTUBE_ENABLED) and config_data.get(
-            CONF_YOUTUBE_API_KEY
-        ):
-            tools.append(YouTubeVideoSearchTool(config_data, self.hass))
+        if self._config_data.get(CONF_YOUTUBE_API_KEY):
+            tools.append(YouTubeVideoSearchTool(self._config_data, self.hass))
 
         return llm.APIInstance(
             api=self,
@@ -118,53 +111,57 @@ class VideoSearchAPI(llm.API):
         )
 
 
-async def setup_llm_api(hass: HomeAssistant, config_data: dict[str, Any]) -> None:
-    """Register search APIs with HA's LLM system."""
-    if (
-        DOMAIN in hass.data
-        and "api" in hass.data[DOMAIN]
-        and hass.data[DOMAIN].get("config") == config_data
-    ):
-        return
+async def setup_llm_api(
+    hass: HomeAssistant, config_data: dict[str, Any], entry_id: str
+) -> None:
+    """Register a search API for a specific config entry."""
+    hass.data.setdefault(DOMAIN, {"cache": {}, "entries": {}})
 
-    if DOMAIN in hass.data and "api" in hass.data[DOMAIN]:
-        await cleanup_llm_api(hass)
+    tool_type = config_data.get(CONF_TOOL_TYPE)
 
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN]["config"] = config_data.copy()
-    hass.data[DOMAIN]["unregister_api"] = []
+    if tool_type == TOOL_TYPE_IMAGE_SEARCH:
+        api = ImageSearchAPI(hass, config_data)
+        if api.get_enabled_tools():
+            unreg = llm.async_register_api(hass, api)
+            hass.data[DOMAIN]["entries"][entry_id] = {
+                "config": config_data.copy(),
+                "unregister_api": unreg,
+            }
+            _LOGGER.info("Registered LLM API: %s", IMAGE_SEARCH_API_NAME)
+        else:
+            _LOGGER.warning(
+                "No image search provider enabled, LLM API not registered"
+            )
 
-    # Register Image Search API
-    image_api = ImageSearchAPI(hass)
-    hass.data[DOMAIN]["api"] = image_api
-
-    if image_api.get_enabled_tools():
-        hass.data[DOMAIN]["unregister_api"].append(
-            llm.async_register_api(hass, image_api)
-        )
-        _LOGGER.info("Registered LLM API: %s", IMAGE_SEARCH_API_NAME)
-    else:
-        _LOGGER.warning("No image search provider enabled, LLM API not registered")
-
-    # Register Video Search API
-    if config_data.get(CONF_YOUTUBE_ENABLED) and config_data.get(CONF_YOUTUBE_API_KEY):
-        video_api = VideoSearchAPI(hass)
-        hass.data[DOMAIN]["video_api"] = video_api
-        hass.data[DOMAIN]["unregister_api"].append(
-            llm.async_register_api(hass, video_api)
-        )
-        _LOGGER.info("Registered LLM API: %s", VIDEO_SEARCH_API_NAME)
+    elif tool_type == TOOL_TYPE_VIDEO_SEARCH:
+        api = VideoSearchAPI(hass, config_data)
+        if config_data.get(CONF_YOUTUBE_API_KEY):
+            unreg = llm.async_register_api(hass, api)
+            hass.data[DOMAIN]["entries"][entry_id] = {
+                "config": config_data.copy(),
+                "unregister_api": unreg,
+            }
+            _LOGGER.info("Registered LLM API: %s", VIDEO_SEARCH_API_NAME)
+        else:
+            _LOGGER.warning(
+                "YouTube API key not configured, Video Search API not registered"
+            )
 
 
-async def cleanup_llm_api(hass: HomeAssistant) -> None:
-    """Unregister and clean up."""
+async def cleanup_llm_api(hass: HomeAssistant, entry_id: str) -> None:
+    """Unregister a specific entry's API."""
     if DOMAIN not in hass.data:
         return
 
-    for unreg_func in hass.data[DOMAIN].get("unregister_api", []):
-        try:
-            unreg_func()
-        except Exception as e:
-            _LOGGER.debug("Error unregistering LLM API: %s", e)
+    entry_data = hass.data[DOMAIN].get("entries", {}).pop(entry_id, None)
+    if entry_data:
+        unreg = entry_data.get("unregister_api")
+        if unreg:
+            try:
+                unreg()
+            except Exception as e:
+                _LOGGER.debug("Error unregistering LLM API: %s", e)
 
-    hass.data.pop(DOMAIN, None)
+    # Clean up domain data when last entry is removed
+    if not hass.data[DOMAIN].get("entries"):
+        hass.data.pop(DOMAIN, None)

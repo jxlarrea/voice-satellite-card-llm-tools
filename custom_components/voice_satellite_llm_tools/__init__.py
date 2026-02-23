@@ -16,7 +16,7 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Set up the Voice Satellite Card LLM Tools integration."""
-    hass.data.setdefault(DOMAIN, {})
+    hass.data.setdefault(DOMAIN, {"cache": {}, "entries": {}})
     return True
 
 
@@ -24,12 +24,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Voice Satellite Card LLM Tools from a config entry."""
     _LOGGER.info("Setting up %s for entry: %s", ADDON_NAME, entry.entry_id)
     config = {**entry.data, **(entry.options or {})}
-    await setup_llm_api(hass, config)
+    await setup_llm_api(hass, config, entry.entry_id)
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
     return True
+
+
+async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Handle options update by reloading the entry."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     _LOGGER.info("Unloading %s for entry: %s", ADDON_NAME, entry.entry_id)
-    await cleanup_llm_api(hass)
+    await cleanup_llm_api(hass, entry.entry_id)
     return True

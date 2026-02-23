@@ -32,6 +32,14 @@ class BaseImageSearchTool(BaseTool):
                 "num_results",
                 description="Number of image results to return (1-10)",
             ): vol.All(int, vol.Range(min=1, max=10)),
+            vol.Optional(
+                "auto_display",
+                description=(
+                    "Set to true when the user wants to see a specific image "
+                    "displayed immediately (e.g. 'show me the Mona Lisa'). "
+                    "Set to false when the user wants to browse multiple results."
+                ),
+            ): bool,
         }
     )
 
@@ -89,16 +97,20 @@ class BaseImageSearchTool(BaseTool):
         """Execute the image search tool."""
         query = tool_input.tool_args["query"]
         num_results = self._get_num_results(tool_input)
+        auto_display = tool_input.tool_args.get("auto_display", False)
 
         _LOGGER.info(
-            "Image search requested: query='%s', num_results=%d", query, num_results
+            "Image search requested: query='%s', num_results=%d, auto_display=%s",
+            query,
+            num_results,
+            auto_display,
         )
 
         try:
             cache_key = self._make_cache_key(query, num_results)
             cached = self._cache_get(cache_key)
             if cached is not None:
-                return self._format_response(cached, query)
+                return self._format_response(cached, query, auto_display)
 
             results = await self.async_search_images(query, num_results)
 
@@ -106,21 +118,25 @@ class BaseImageSearchTool(BaseTool):
                 return {
                     "query": query,
                     "results": [],
+                    "auto_display": False,
                     "message": "No images found for this query.",
                 }
 
             self._cache_set(cache_key, results)
-            return self._format_response(results, query)
+            return self._format_response(results, query, auto_display)
 
         except Exception as e:
             _LOGGER.exception("Error during image search for '%s': %s", query, e)
             return {"error": f"Image search failed: {e!s}"}
 
-    def _format_response(self, results: list[dict], query: str) -> dict:
+    def _format_response(
+        self, results: list[dict], query: str, auto_display: bool
+    ) -> dict:
         """Format the search results into the LLM response structure."""
         return {
             "query": query,
             "num_results": len(results),
+            "auto_display": auto_display,
             "results": [
                 {
                     "image_url": r["image_url"],

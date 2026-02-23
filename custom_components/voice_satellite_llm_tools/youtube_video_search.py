@@ -42,6 +42,14 @@ class YouTubeVideoSearchTool(BaseTool):
                 "num_results",
                 description="Number of video results to return (1-10)",
             ): vol.All(int, vol.Range(min=1, max=10)),
+            vol.Optional(
+                "auto_play",
+                description=(
+                    "Set to true when the user wants to immediately watch/play a "
+                    "specific video. Set to false when the user wants to browse or "
+                    "explore multiple results."
+                ),
+            ): bool,
         }
     )
 
@@ -88,16 +96,20 @@ class YouTubeVideoSearchTool(BaseTool):
         """Execute the video search tool."""
         query = tool_input.tool_args["query"]
         num_results = self._get_num_results(tool_input)
+        auto_play = tool_input.tool_args.get("auto_play", False)
 
         _LOGGER.info(
-            "Video search requested: query='%s', num_results=%d", query, num_results
+            "Video search requested: query='%s', num_results=%d, auto_play=%s",
+            query,
+            num_results,
+            auto_play,
         )
 
         try:
             cache_key = self._make_cache_key(query, num_results)
             cached = self._cache_get(cache_key)
             if cached is not None:
-                return self._format_response(cached, query)
+                return self._format_response(cached, query, auto_play)
 
             results = await self._search_videos(query, num_results)
 
@@ -105,11 +117,12 @@ class YouTubeVideoSearchTool(BaseTool):
                 return {
                     "query": query,
                     "results": [],
+                    "auto_play": False,
                     "message": "No videos found for this query.",
                 }
 
             self._cache_set(cache_key, results)
-            return self._format_response(results, query)
+            return self._format_response(results, query, auto_play)
 
         except Exception as e:
             _LOGGER.exception("Error during video search for '%s': %s", query, e)
@@ -197,11 +210,14 @@ class YouTubeVideoSearchTool(BaseTool):
 
         return results
 
-    def _format_response(self, results: list[dict], query: str) -> dict:
+    def _format_response(
+        self, results: list[dict], query: str, auto_play: bool
+    ) -> dict:
         """Format the search results into the LLM response structure."""
         return {
             "query": query,
             "num_results": len(results),
+            "auto_play": auto_play,
             "results": results,
             "instruction": (
                 "Do NOT include video URLs in your response. "

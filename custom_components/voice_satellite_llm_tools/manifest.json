@@ -1,5 +1,5 @@
 {
-  "domain": "voice_satellite_card_llm_tools",
+  "domain": "voice_satellite_llm_tools",
   "name": "Voice Satellite Card LLM Tools",
   "integration_type": "service",
   "iot_class": "cloud_polling",
@@ -10,5 +10,5 @@
   "codeowners": [],
   "documentation": "https://github.com/jxlarrea/voice-satellite-card-llm-tools",
   "issue_tracker": "https://github.com/jxlarrea/voice-satellite-card-llm-tools/issues",
-  "loggers": ["custom_components.voice_satellite_card_llm_tools"]
+  "loggers": ["custom_components.voice_satellite_llm_tools"]
 }

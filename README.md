@@ -40,7 +40,7 @@ Search YouTube for videos with full metadata:
 |----------|-------------|
 | **YouTube Data API v3** | Uses the [YouTube Data API](https://developers.google.com/youtube/v3). Requires an API key with YouTube Data API v3 enabled. Returns video titles, thumbnails, channel names, durations, view counts, and more. |
 
-Video search is **disabled by default** and can be enabled during setup or in the integration options.
+Video search is configured as a separate entry and can be added independently from image search.
 
 ### Result Caching
 
@@ -63,19 +63,31 @@ All search results are cached in memory with a configurable TTL (default: 1 hour
 ### Manual
 
 1. Download the [latest release](https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases/latest)
-2. Copy the `custom_components/voice_satellite_card_llm_tools` folder to your `config/custom_components/` directory
+2. Copy the `custom_components/voice_satellite_llm_tools` folder to your `config/custom_components/` directory
 3. Restart Home Assistant
 
 ## Setup
 
+Each tool (Image Search, Video Search) is configured as a separate entry, so you can add and remove them independently.
+
+### Adding Image Search
+
 1. Go to **Settings > Devices & Services > Add Integration**
 2. Search for **Voice Satellite Card LLM Tools**
-3. **Step 1:** Select your image search provider (Google, Brave, or SearXNG)
-4. **Step 2:** Enter your provider credentials and configure the default number of results
-5. **Step 3:** Optionally enable YouTube video search and enter your YouTube API key
-6. Go to your **Assist Pipeline** settings and enable the **Image Search Services** (and **Video Search Services** if configured) LLM APIs for your conversation agent
+3. Select **Image Search** as the tool type
+4. Choose your image search provider (Google, Brave, or SearXNG)
+5. Enter your provider credentials and configure the default number of results
+6. Go to your **Assist Pipeline** settings and enable the **Image Search Services** LLM API for your conversation agent
 
-> **Note:** Only one instance of this integration is allowed. To change providers or settings later, go to the integration's options flow (**Settings > Devices & Services > Voice Satellite Card LLM Tools > Configure**).
+### Adding Video Search
+
+1. Go to **Settings > Devices & Services > Add Integration**
+2. Search for **Voice Satellite Card LLM Tools**
+3. Select **Video Search** as the tool type
+4. Enter your YouTube Data API v3 key and configure the default number of results
+5. Go to your **Assist Pipeline** settings and enable the **Video Search Services** LLM API for your conversation agent
+
+> **Note:** Only one Image Search entry and one Video Search entry are allowed at a time. To change providers or settings, go to the entry's options flow (**Settings > Devices & Services > Voice Satellite Card LLM Tools > Configure**). To disable a tool, simply remove its entry.
 
 ## Provider Setup
 
@@ -127,7 +139,6 @@ All search results are cached in memory with a configurable TTL (default: 1 hour
 
 | Option | Description |
 |--------|-------------|
-| **Enable YouTube Video Search** | Toggle video search on/off |
 | **YouTube API Key** | Your YouTube Data API v3 key |
 | **Default Number of Results** | 1-10 videos per search (default: 3) |
 

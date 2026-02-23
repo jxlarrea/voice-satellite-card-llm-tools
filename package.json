@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "xcopy /E /I /Y \"custom_components\\voice_satellite_card_llm_tools\" \"\\\\hassio\\config\\custom_components\\voice_satellite_card_llm_tools\""
+    "dev": "xcopy /E /I /Y \"custom_components\\voice_satellite_llm_tools\" \"\\\\hassio\\config\\custom_components\\voice_satellite_llm_tools\""
   },
   "repository": {
     "type": "git",
