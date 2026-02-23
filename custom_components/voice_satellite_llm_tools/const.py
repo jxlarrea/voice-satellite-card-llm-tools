@@ -9,8 +9,8 @@ TOOL_TYPE_IMAGE_SEARCH = "image_search"
 TOOL_TYPE_VIDEO_SEARCH = "video_search"
 
 CONF_TOOL_TYPES = {
-    "Image Search": TOOL_TYPE_IMAGE_SEARCH,
-    "Video Search": TOOL_TYPE_VIDEO_SEARCH,
+    TOOL_TYPE_IMAGE_SEARCH: "Image Search",
+    TOOL_TYPE_VIDEO_SEARCH: "Video Search",
 }
 
 # LLM API identifiers
