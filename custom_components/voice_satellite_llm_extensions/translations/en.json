@@ -41,6 +41,18 @@
           "searxng_server_url": "Protocol, host, and port, e.g.: http://localhost:8080",
           "searxng_engines": "Comma-separated list of image engines, e.g.: bing images,google images. Leave empty to use all enabled engines."
         }
+      },
+      "youtube": {
+        "title": "Configure YouTube Video Search",
+        "description": "Enable YouTube video search and enter your YouTube Data API v3 key.",
+        "data": {
+          "youtube_enabled": "Enable YouTube Video Search",
+          "youtube_api_key": "YouTube API Key",
+          "youtube_num_results": "Default Number of Results"
+        },
+        "data_description": {
+          "youtube_api_key": "Get your API key from the Google Cloud Console with YouTube Data API v3 enabled."
+        }
       }
     },
     "abort": {
@@ -84,6 +96,18 @@
         },
         "data_description": {
           "searxng_engines": "Comma-separated list of image engines, e.g.: bing images,google images. Leave empty to use all enabled engines."
+        }
+      },
+      "youtube": {
+        "title": "Configure YouTube Video Search",
+        "description": "Update your YouTube video search settings.",
+        "data": {
+          "youtube_enabled": "Enable YouTube Video Search",
+          "youtube_api_key": "YouTube API Key",
+          "youtube_num_results": "Default Number of Results"
+        },
+        "data_description": {
+          "youtube_api_key": "Get your API key from the Google Cloud Console with YouTube Data API v3 enabled."
         }
       }
     }

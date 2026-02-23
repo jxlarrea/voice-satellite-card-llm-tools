@@ -1,5 +1,5 @@
 {
-  "domain": "ha_llm_extensions",
+  "domain": "voice_satellite_llm_extensions",
   "name": "LLM Extensions",
   "integration_type": "service",
   "iot_class": "cloud_polling",
@@ -8,7 +8,7 @@
   "dependencies": [],
   "requirements": [],
   "codeowners": [],
-  "documentation": "https://github.com/jxlarrea/ha-llm-extensions",
-  "issue_tracker": "https://github.com/jxlarrea/ha-llm-extensions/issues",
-  "loggers": ["custom_components.ha_llm_extensions"]
+  "documentation": "https://github.com/jxlarrea/voice-satellite-card-llm-extensions",
+  "issue_tracker": "https://github.com/jxlarrea/voice-satellite-card-llm-extensions/issues",
+  "loggers": ["custom_components.voice_satellite_llm_extensions"]
 }

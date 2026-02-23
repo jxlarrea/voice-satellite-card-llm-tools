@@ -1,4 +1,4 @@
-"""LLM API registration for image search services."""
+"""LLM API registration for search services."""
 
 import logging
 from typing import Any
@@ -12,13 +12,19 @@ from .const import (
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
     CONF_IMAGE_SEARCH_PROVIDER_GOOGLE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
+    CONF_YOUTUBE_API_KEY,
+    CONF_YOUTUBE_ENABLED,
     DOMAIN,
     IMAGE_SEARCH_API_ID,
     IMAGE_SEARCH_API_NAME,
     IMAGE_SEARCH_SERVICES_PROMPT,
+    VIDEO_SEARCH_API_ID,
+    VIDEO_SEARCH_API_NAME,
+    VIDEO_SEARCH_SERVICES_PROMPT,
 )
 from .google_image_search import GoogleImageSearchTool
 from .searxng_image_search import SearXNGImageSearchTool
+from .youtube_video_search import YouTubeVideoSearchTool
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -81,8 +87,39 @@ class ImageSearchAPI(llm.API):
         )
 
 
+class VideoSearchAPI(llm.API):
+    """Video Search API for LLM integration."""
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the Video Search API."""
+        super().__init__(
+            hass=hass,
+            id=VIDEO_SEARCH_API_ID,
+            name=VIDEO_SEARCH_API_NAME,
+        )
+
+    async def async_get_api_instance(
+        self, llm_context: llm.LLMContext
+    ) -> llm.APIInstance:
+        """Return an API instance with the YouTube video search tool."""
+        config_data = self.hass.data.get(DOMAIN, {}).get("config", {})
+        tools = []
+
+        if config_data.get(CONF_YOUTUBE_ENABLED) and config_data.get(
+            CONF_YOUTUBE_API_KEY
+        ):
+            tools.append(YouTubeVideoSearchTool(config_data, self.hass))
+
+        return llm.APIInstance(
+            api=self,
+            api_prompt=VIDEO_SEARCH_SERVICES_PROMPT,
+            llm_context=llm_context,
+            tools=tools,
+        )
+
+
 async def setup_llm_api(hass: HomeAssistant, config_data: dict[str, Any]) -> None:
-    """Register the image search API with HA's LLM system."""
+    """Register search APIs with HA's LLM system."""
     if (
         DOMAIN in hass.data
         and "api" in hass.data[DOMAIN]
@@ -94,19 +131,29 @@ async def setup_llm_api(hass: HomeAssistant, config_data: dict[str, Any]) -> Non
         await cleanup_llm_api(hass)
 
     hass.data.setdefault(DOMAIN, {})
-    api = ImageSearchAPI(hass)
-
-    hass.data[DOMAIN]["api"] = api
     hass.data[DOMAIN]["config"] = config_data.copy()
     hass.data[DOMAIN]["unregister_api"] = []
 
-    if api.get_enabled_tools():
+    # Register Image Search API
+    image_api = ImageSearchAPI(hass)
+    hass.data[DOMAIN]["api"] = image_api
+
+    if image_api.get_enabled_tools():
         hass.data[DOMAIN]["unregister_api"].append(
-            llm.async_register_api(hass, api)
+            llm.async_register_api(hass, image_api)
         )
         _LOGGER.info("Registered LLM API: %s", IMAGE_SEARCH_API_NAME)
     else:
         _LOGGER.warning("No image search provider enabled, LLM API not registered")
+
+    # Register Video Search API
+    if config_data.get(CONF_YOUTUBE_ENABLED) and config_data.get(CONF_YOUTUBE_API_KEY):
+        video_api = VideoSearchAPI(hass)
+        hass.data[DOMAIN]["video_api"] = video_api
+        hass.data[DOMAIN]["unregister_api"].append(
+            llm.async_register_api(hass, video_api)
+        )
+        _LOGGER.info("Registered LLM API: %s", VIDEO_SEARCH_API_NAME)
 
 
 async def cleanup_llm_api(hass: HomeAssistant) -> None:

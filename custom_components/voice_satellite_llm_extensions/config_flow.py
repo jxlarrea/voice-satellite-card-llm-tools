@@ -9,6 +9,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.selector import (
+    BooleanSelector,
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
@@ -37,6 +38,9 @@ from .const import (
     CONF_SEARXNG_ENGINES,
     CONF_SEARXNG_IMAGE_NUM_RESULTS,
     CONF_SEARXNG_URL,
+    CONF_YOUTUBE_API_KEY,
+    CONF_YOUTUBE_ENABLED,
+    CONF_YOUTUBE_NUM_RESULTS,
     DOMAIN,
     SERVICE_DEFAULTS,
 )
@@ -48,6 +52,7 @@ STEP_USER = "user"
 STEP_GOOGLE = "google"
 STEP_BRAVE = "brave"
 STEP_SEARXNG = "searxng"
+STEP_YOUTUBE = "youtube"
 
 SAFESEARCH_OPTIONS = {
     "off": "Off",
@@ -61,7 +66,7 @@ def _options_to_selections(opts: dict) -> list[SelectOptionDict]:
     return [SelectOptionDict(value=key, label=val) for key, val in opts.items()]
 
 
-def _num_results_selector() -> NumberSelector:
+def _num_results_selector(unit: str = "images") -> NumberSelector:
     """Create a number selector for result count (1-10)."""
     return NumberSelector(
         NumberSelectorConfig(
@@ -69,7 +74,7 @@ def _num_results_selector() -> NumberSelector:
             max=10,
             step=1,
             mode=NumberSelectorMode.SLIDER,
-            unit_of_measurement="images",
+            unit_of_measurement=unit,
         )
     )
 
@@ -153,6 +158,26 @@ def get_searxng_schema() -> vol.Schema:
     )
 
 
+def get_youtube_schema() -> vol.Schema:
+    """Schema for YouTube Data API v3 configuration."""
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_YOUTUBE_ENABLED,
+                default=SERVICE_DEFAULTS[CONF_YOUTUBE_ENABLED],
+            ): BooleanSelector(),
+            vol.Optional(
+                CONF_YOUTUBE_API_KEY,
+                default=SERVICE_DEFAULTS[CONF_YOUTUBE_API_KEY],
+            ): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
+            vol.Optional(
+                CONF_YOUTUBE_NUM_RESULTS,
+                default=SERVICE_DEFAULTS[CONF_YOUTUBE_NUM_RESULTS],
+            ): _num_results_selector(unit="videos"),
+        }
+    )
+
+
 # Map provider to (step_id, schema_func)
 PROVIDER_STEP_MAP = {
     CONF_IMAGE_SEARCH_PROVIDER_GOOGLE: (STEP_GOOGLE, get_google_schema),
@@ -161,7 +186,7 @@ PROVIDER_STEP_MAP = {
 }
 
 
-class HaLlmExtensionsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class VoiceSatelliteLlmExtensionsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for LLM Extensions."""
 
     VERSION = 1
@@ -211,7 +236,10 @@ class HaLlmExtensionsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
 
         self.config_data.update(user_input)
-        return self.async_create_entry(title=ADDON_NAME, data=self.config_data)
+        return self.async_show_form(
+            step_id=STEP_YOUTUBE,
+            data_schema=get_youtube_schema(),
+        )
 
     async def async_step_google(
         self, user_input: dict[str, Any] | None = None
@@ -231,16 +259,29 @@ class HaLlmExtensionsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Step 2: SearXNG settings."""
         return await self._handle_provider_step(STEP_SEARXNG, user_input)
 
+    async def async_step_youtube(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Step 3: YouTube Video Search settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_YOUTUBE,
+                data_schema=get_youtube_schema(),
+            )
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(title=ADDON_NAME, data=self.config_data)
+
     @staticmethod
     @callback
     def async_get_options_flow(
         config_entry: config_entries.ConfigEntry,
     ) -> config_entries.OptionsFlow:
         """Get the options flow handler."""
-        return HaLlmExtensionsOptionsFlow(config_entry)
+        return VoiceSatelliteLlmExtensionsOptionsFlow(config_entry)
 
 
-class HaLlmExtensionsOptionsFlow(config_entries.OptionsFlow):
+class VoiceSatelliteLlmExtensionsOptionsFlow(config_entries.OptionsFlow):
     """Options flow for reconfiguration."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
@@ -282,7 +323,9 @@ class HaLlmExtensionsOptionsFlow(config_entries.OptionsFlow):
             return self.async_show_form(step_id=step_id, data_schema=schema)
 
         self.config_data.update(user_input)
-        return self.async_create_entry(data=self.config_data)
+        schema = get_youtube_schema()
+        schema = self.add_suggested_values_to_schema(schema, self.config_data)
+        return self.async_show_form(step_id=STEP_YOUTUBE, data_schema=schema)
 
     async def async_step_google(
         self, user_input: dict[str, Any] | None = None
@@ -301,3 +344,15 @@ class HaLlmExtensionsOptionsFlow(config_entries.OptionsFlow):
     ) -> config_entries.ConfigFlowResult:
         """Options: SearXNG settings."""
         return await self._handle_provider_step(STEP_SEARXNG, user_input)
+
+    async def async_step_youtube(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: YouTube Video Search settings."""
+        if user_input is None:
+            schema = get_youtube_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_YOUTUBE, data_schema=schema)
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)

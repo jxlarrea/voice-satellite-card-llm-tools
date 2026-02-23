@@ -1,20 +1,20 @@
 {
-  "name": "ha-llm-extensions",
+  "name": "voice-satellite-card-llm-extensions",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "xcopy /E /I /Y \"custom_components\\ha_llm_extensions\" \"\\\\hassio\\config\\custom_components\\ha_llm_extensions\""
+    "dev": "xcopy /E /I /Y \"custom_components\\voice_satellite_llm_extensions\" \"\\\\hassio\\config\\custom_components\\voice_satellite_llm_extensions\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jxlarrea/ha-llm-extensions.git"
+    "url": "git+https://github.com/jxlarrea/voice-satellite-card-llm-extensions.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jxlarrea/ha-llm-extensions/issues"
+    "url": "https://github.com/jxlarrea/voice-satellite-card-llm-extensions/issues"
   },
-  "homepage": "https://github.com/jxlarrea/ha-llm-extensions#readme",
+  "homepage": "https://github.com/jxlarrea/voice-satellite-card-llm-extensions#readme",
   "description": ""
 }

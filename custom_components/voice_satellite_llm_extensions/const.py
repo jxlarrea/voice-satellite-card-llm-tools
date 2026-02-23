@@ -1,15 +1,24 @@
 """Constants for the LLM Extensions integration."""
 
-DOMAIN = "ha_llm_extensions"
+DOMAIN = "voice_satellite_llm_extensions"
 ADDON_NAME = "LLM Extensions"
 
 # LLM API identifiers
 IMAGE_SEARCH_API_NAME = "Image Search Services"
-IMAGE_SEARCH_API_ID = "ha_llm_extensions_image_search"
+IMAGE_SEARCH_API_ID = "voice_satellite_llm_extensions_image_search"
 
 IMAGE_SEARCH_SERVICES_PROMPT = (
     "You may use the Image Search Services tools to find images on the internet. "
     "When the user asks you to find, search for, or show images, use the search_images tool."
+)
+
+# Video Search LLM API identifiers
+VIDEO_SEARCH_API_NAME = "Video Search Services"
+VIDEO_SEARCH_API_ID = "voice_satellite_llm_extensions_video_search"
+
+VIDEO_SEARCH_SERVICES_PROMPT = (
+    "You may use the Video Search Services tools to find videos on YouTube. "
+    "When the user asks you to find, search for, or show videos, use the search_videos tool."
 )
 
 # Provider selection
@@ -39,6 +48,11 @@ CONF_SEARXNG_URL = "searxng_server_url"
 CONF_SEARXNG_IMAGE_NUM_RESULTS = "searxng_image_num_results"
 CONF_SEARXNG_ENGINES = "searxng_engines"
 
+# YouTube Data API v3 config keys
+CONF_YOUTUBE_API_KEY = "youtube_api_key"
+CONF_YOUTUBE_NUM_RESULTS = "youtube_num_results"
+CONF_YOUTUBE_ENABLED = "youtube_enabled"
+
 # Cache config
 CONF_CACHE_TTL = "cache_ttl"
 DEFAULT_CACHE_TTL = 3600  # 1 hour in seconds
@@ -54,4 +68,7 @@ SERVICE_DEFAULTS = {
     CONF_SEARXNG_URL: "",
     CONF_SEARXNG_IMAGE_NUM_RESULTS: 3,
     CONF_SEARXNG_ENGINES: "",
+    CONF_YOUTUBE_API_KEY: "",
+    CONF_YOUTUBE_NUM_RESULTS: 3,
+    CONF_YOUTUBE_ENABLED: False,
 }
