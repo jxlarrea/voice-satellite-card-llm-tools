@@ -85,6 +85,39 @@
         "data_description": {
           "wikipedia_detail": "Concise returns a short summary. Detailed returns the full introduction section, which uses more LLM tokens."
         }
+      },
+      "weather": {
+        "title": "Configure Weather Forecast",
+        "description": "Select your weather entities. No API key required — uses your existing Home Assistant weather integration.",
+        "data": {
+          "daily_weather_entity": "Daily Forecast Entity",
+          "hourly_weather_entity": "Hourly Forecast Entity",
+          "weather_temperature_sensor": "Current Temperature Sensor",
+          "weather_humidity_sensor": "Current Humidity Sensor"
+        },
+        "data_description": {
+          "daily_weather_entity": "A weather entity that provides daily forecasts.",
+          "hourly_weather_entity": "Optional. Enables hour-by-hour detail when asking about a specific day.",
+          "weather_temperature_sensor": "Optional. Includes the current temperature when asking about today's weather.",
+          "weather_humidity_sensor": "Optional. Includes the current humidity when asking about today's weather."
+        }
+      },
+      "financial_provider": {
+        "title": "Configure Financial Data",
+        "description": "Select your financial data provider.",
+        "data": {
+          "financial_provider": "Financial Data Provider"
+        }
+      },
+      "finnhub_financial": {
+        "title": "Configure Finnhub Financial Data",
+        "description": "Enter your Finnhub API key. Get a free key at finnhub.io.",
+        "data": {
+          "finnhub_api_key": "Finnhub API Key"
+        },
+        "data_description": {
+          "finnhub_api_key": "Get your free API key from finnhub.io. Supports stock quotes and currency exchange rates."
+        }
       }
     },
     "abort": {
@@ -92,6 +125,8 @@
       "video_search_already_configured": "Video Search is already configured. Use the existing entry's options to change settings.",
       "web_search_already_configured": "Web Search is already configured. Use the existing entry's options to change settings.",
       "wikipedia_already_configured": "Wikipedia Search is already configured. Use the existing entry's options to change settings.",
+      "weather_already_configured": "Weather Forecast is already configured. Use the existing entry's options to change settings.",
+      "financial_already_configured": "Financial Data is already configured. Use the existing entry's options to change settings.",
       "unknown_tool_type": "Unknown tool type selected.",
       "unknown_provider": "Unknown search provider selected."
     }
@@ -172,6 +207,39 @@
         },
         "data_description": {
           "wikipedia_detail": "Concise returns a short summary. Detailed returns the full introduction section, which uses more LLM tokens."
+        }
+      },
+      "weather": {
+        "title": "Weather Forecast Options",
+        "description": "Update your weather forecast entity settings.",
+        "data": {
+          "daily_weather_entity": "Daily Forecast Entity",
+          "hourly_weather_entity": "Hourly Forecast Entity",
+          "weather_temperature_sensor": "Current Temperature Sensor",
+          "weather_humidity_sensor": "Current Humidity Sensor"
+        },
+        "data_description": {
+          "daily_weather_entity": "A weather entity that provides daily forecasts.",
+          "hourly_weather_entity": "Optional. Enables hour-by-hour detail when asking about a specific day.",
+          "weather_temperature_sensor": "Optional. Includes the current temperature when asking about today's weather.",
+          "weather_humidity_sensor": "Optional. Includes the current humidity when asking about today's weather."
+        }
+      },
+      "financial_provider": {
+        "title": "Financial Data Options",
+        "description": "Change your financial data provider or settings.",
+        "data": {
+          "financial_provider": "Financial Data Provider"
+        }
+      },
+      "finnhub_financial": {
+        "title": "Configure Finnhub Financial Data",
+        "description": "Update your Finnhub API settings.",
+        "data": {
+          "finnhub_api_key": "Finnhub API Key"
+        },
+        "data_description": {
+          "finnhub_api_key": "Get your free API key from finnhub.io. Supports stock quotes and currency exchange rates."
         }
       }
     }

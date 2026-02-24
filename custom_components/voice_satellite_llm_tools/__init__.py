@@ -1,12 +1,14 @@
 """The Voice Satellite Card LLM Tools integration."""
 
 import logging
+from pathlib import Path
 
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 
-from .const import ADDON_NAME, DOMAIN
+from .const import ADDON_NAME, DOMAIN, WEATHER_ICONS_PATH
 from .llm_api import cleanup_llm_api, setup_llm_api
 
 _LOGGER = logging.getLogger(__name__)
@@ -17,6 +19,12 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Set up the Voice Satellite Card LLM Tools integration."""
     hass.data.setdefault(DOMAIN, {"cache": {}, "entries": {}})
+
+    icons_dir = str(Path(__file__).parent / "weather_icons")
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(WEATHER_ICONS_PATH, icons_dir, cache_headers=True)]
+    )
+
     return True
 
 

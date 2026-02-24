@@ -2,6 +2,7 @@
 
 DOMAIN = "voice_satellite_llm_tools"
 ADDON_NAME = "Voice Satellite Card LLM Tools"
+WEATHER_ICONS_PATH = f"/api/{DOMAIN}/weather_icons"
 
 # Tool type selection
 CONF_TOOL_TYPE = "tool_type"
@@ -9,12 +10,16 @@ TOOL_TYPE_IMAGE_SEARCH = "image_search"
 TOOL_TYPE_VIDEO_SEARCH = "video_search"
 TOOL_TYPE_WEB_SEARCH = "web_search"
 TOOL_TYPE_WIKIPEDIA = "wikipedia"
+TOOL_TYPE_WEATHER = "weather"
+TOOL_TYPE_FINANCIAL = "financial_data"
 
 CONF_TOOL_TYPES = {
     TOOL_TYPE_IMAGE_SEARCH: "Image Search",
     TOOL_TYPE_VIDEO_SEARCH: "Video Search",
     TOOL_TYPE_WEB_SEARCH: "Web Search",
     TOOL_TYPE_WIKIPEDIA: "Wikipedia",
+    TOOL_TYPE_WEATHER: "Weather Forecast",
+    TOOL_TYPE_FINANCIAL: "Financial Data",
 }
 
 # LLM API identifiers
@@ -63,6 +68,17 @@ WIKIPEDIA_SERVICES_PROMPT = (
     "use the search_wikipedia tool."
 )
 
+# Weather Forecast LLM API identifiers
+WEATHER_API_NAME = "Voice Satellite Card: Weather Forecast"
+WEATHER_API_ID = "voice_satellite_llm_tools_weather"
+
+WEATHER_SERVICES_PROMPT = (
+    "You may use the Weather Forecast tool to get weather information. "
+    "When the user asks about the weather, temperature, or forecast for today, "
+    "tomorrow, a specific day of the week, or the upcoming week, use the "
+    "get_weather_forecast tool with the appropriate range parameter."
+)
+
 # Provider selection
 CONF_IMAGE_SEARCH_PROVIDER = "image_search_provider"
 CONF_IMAGE_SEARCH_PROVIDER_BRAVE = "Brave"
@@ -109,6 +125,42 @@ CONF_WIKIPEDIA_DETAIL_OPTIONS = {
     WIKIPEDIA_DETAIL_CONCISE: "Concise",
     WIKIPEDIA_DETAIL_DETAILED: "Detailed",
 }
+
+# Financial Data LLM API identifiers
+FINANCIAL_API_NAME = "Voice Satellite Card: Financial Data"
+FINANCIAL_API_ID = "voice_satellite_llm_tools_financial"
+
+FINANCIAL_SERVICES_PROMPT = (
+    "You may use the Financial Data tool to look up stock prices, cryptocurrency prices, "
+    "and convert currencies. "
+    "When the user asks about a stock price, cryptocurrency price, market data, "
+    "or how a stock or crypto is doing, use the get_financial_data tool with "
+    "query_type 'stock' and the ticker symbol (e.g. AAPL, TSLA, BTC, ETH). "
+    "When the user asks to convert currencies or about exchange rates, "
+    "use the get_financial_data tool with query_type 'currency'."
+)
+
+# Financial Data provider selection
+CONF_FINANCIAL_PROVIDER = "financial_provider"
+CONF_FINANCIAL_PROVIDER_FINNHUB = "Finnhub"
+
+CONF_FINANCIAL_PROVIDERS = {
+    "Finnhub": CONF_FINANCIAL_PROVIDER_FINNHUB,
+}
+
+# Finnhub config keys
+CONF_FINNHUB_API_KEY = "finnhub_api_key"
+
+# Financial Data defaults
+FINANCIAL_DEFAULTS = {
+    CONF_FINNHUB_API_KEY: "",
+}
+
+# Weather Forecast config keys
+CONF_DAILY_WEATHER_ENTITY = "daily_weather_entity"
+CONF_HOURLY_WEATHER_ENTITY = "hourly_weather_entity"
+CONF_WEATHER_TEMPERATURE_SENSOR = "weather_temperature_sensor"
+CONF_WEATHER_HUMIDITY_SENSOR = "weather_humidity_sensor"
 
 # YouTube Data API v3 config keys
 CONF_YOUTUBE_API_KEY = "youtube_api_key"

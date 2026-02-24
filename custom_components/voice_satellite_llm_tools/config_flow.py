@@ -9,6 +9,8 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.selector import (
+    EntitySelector,
+    EntitySelectorConfig,
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
@@ -26,6 +28,13 @@ from .const import (
     CONF_BRAVE_IMAGE_NUM_RESULTS,
     CONF_BRAVE_SAFESEARCH,
     CONF_BRAVE_WEB_NUM_RESULTS,
+    CONF_DAILY_WEATHER_ENTITY,
+    CONF_FINANCIAL_PROVIDER,
+    CONF_FINANCIAL_PROVIDER_FINNHUB,
+    CONF_FINANCIAL_PROVIDERS,
+    CONF_FINNHUB_API_KEY,
+    CONF_HOURLY_WEATHER_ENTITY,
+    CONF_WEATHER_HUMIDITY_SENSOR,
     CONF_IMAGE_SEARCH_PROVIDER,
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
@@ -37,6 +46,7 @@ from .const import (
     CONF_SEARXNG_WEB_NUM_RESULTS,
     CONF_TOOL_TYPE,
     CONF_TOOL_TYPES,
+    CONF_WEATHER_TEMPERATURE_SENSOR,
     CONF_WEB_SEARCH_PROVIDER,
     CONF_WEB_SEARCH_PROVIDER_BRAVE,
     CONF_WEB_SEARCH_PROVIDER_SEARXNG,
@@ -46,9 +56,12 @@ from .const import (
     CONF_YOUTUBE_API_KEY,
     CONF_YOUTUBE_NUM_RESULTS,
     DOMAIN,
+    FINANCIAL_DEFAULTS,
     IMAGE_SEARCH_DEFAULTS,
+    TOOL_TYPE_FINANCIAL,
     TOOL_TYPE_IMAGE_SEARCH,
     TOOL_TYPE_VIDEO_SEARCH,
+    TOOL_TYPE_WEATHER,
     TOOL_TYPE_WEB_SEARCH,
     TOOL_TYPE_WIKIPEDIA,
     VIDEO_SEARCH_DEFAULTS,
@@ -69,6 +82,9 @@ STEP_WEB_PROVIDER = "web_provider"
 STEP_BRAVE_WEB = "brave_web"
 STEP_SEARXNG_WEB = "searxng_web"
 STEP_WIKIPEDIA = "wikipedia"
+STEP_WEATHER = "weather"
+STEP_FINANCIAL_PROVIDER = "financial_provider"
+STEP_FINNHUB_FINANCIAL = "finnhub_financial"
 
 SAFESEARCH_OPTIONS = {
     "off": "Off",
@@ -257,7 +273,67 @@ def get_wikipedia_schema(defaults: dict | None = None) -> vol.Schema:
     )
 
 
+def get_weather_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for Weather Forecast configuration."""
+    d = defaults or {}
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_DAILY_WEATHER_ENTITY,
+                default=d.get(CONF_DAILY_WEATHER_ENTITY, ""),
+            ): EntitySelector(EntitySelectorConfig(domain="weather")),
+            vol.Optional(
+                CONF_HOURLY_WEATHER_ENTITY,
+            ): EntitySelector(EntitySelectorConfig(domain="weather")),
+            vol.Optional(
+                CONF_WEATHER_TEMPERATURE_SENSOR,
+            ): EntitySelector(
+                EntitySelectorConfig(domain="sensor", device_class="temperature")
+            ),
+            vol.Optional(
+                CONF_WEATHER_HUMIDITY_SENSOR,
+            ): EntitySelector(
+                EntitySelectorConfig(domain="sensor", device_class="humidity")
+            ),
+        }
+    )
+
+
+def get_financial_provider_schema() -> vol.Schema:
+    """Schema for financial data provider selection step."""
+    return vol.Schema(
+        {
+            vol.Required(CONF_FINANCIAL_PROVIDER): SelectSelector(
+                SelectSelectorConfig(
+                    mode=SelectSelectorMode.DROPDOWN,
+                    options=_options_to_selections(CONF_FINANCIAL_PROVIDERS),
+                )
+            ),
+        }
+    )
+
+
+def get_finnhub_financial_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for Finnhub Financial Data configuration."""
+    d = defaults or FINANCIAL_DEFAULTS
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_FINNHUB_API_KEY,
+                default=d.get(CONF_FINNHUB_API_KEY, ""),
+            ): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
+        }
+    )
+
+
 # Map provider to (step_id, schema_func)
+FINANCIAL_PROVIDER_STEP_MAP = {
+    CONF_FINANCIAL_PROVIDER_FINNHUB: (
+        STEP_FINNHUB_FINANCIAL,
+        get_finnhub_financial_schema,
+    ),
+}
+
 PROVIDER_STEP_MAP = {
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE: (STEP_BRAVE, get_brave_schema),
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG: (STEP_SEARXNG, get_searxng_schema),
@@ -328,6 +404,22 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
             return self.async_show_form(
                 step_id=STEP_WIKIPEDIA,
                 data_schema=get_wikipedia_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_WEATHER:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_WEATHER):
+                return self.async_abort(reason="weather_already_configured")
+            return self.async_show_form(
+                step_id=STEP_WEATHER,
+                data_schema=get_weather_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_FINANCIAL:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_FINANCIAL):
+                return self.async_abort(reason="financial_already_configured")
+            return self.async_show_form(
+                step_id=STEP_FINANCIAL_PROVIDER,
+                data_schema=get_financial_provider_schema(),
             )
 
         return self.async_abort(reason="unknown_tool_type")
@@ -474,6 +566,62 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
             title="Wikipedia Search", data=self.config_data
         )
 
+    async def async_step_weather(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure Weather Forecast settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_WEATHER,
+                data_schema=get_weather_schema(),
+            )
+
+        self.config_data.update(user_input)
+        await self.async_set_unique_id(f"{DOMAIN}_weather")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(
+            title="Weather Forecast", data=self.config_data
+        )
+
+    async def async_step_financial_provider(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Step 2 (financial): Select financial data provider."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_FINANCIAL_PROVIDER,
+                data_schema=get_financial_provider_schema(),
+            )
+
+        self.config_data.update(user_input)
+        provider = user_input.get(CONF_FINANCIAL_PROVIDER)
+
+        if provider in FINANCIAL_PROVIDER_STEP_MAP:
+            step_id, schema_func = FINANCIAL_PROVIDER_STEP_MAP[provider]
+            return self.async_show_form(
+                step_id=step_id,
+                data_schema=schema_func(),
+            )
+
+        return self.async_abort(reason="unknown_provider")
+
+    async def async_step_finnhub_financial(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure Finnhub Financial Data settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_FINNHUB_FINANCIAL,
+                data_schema=get_finnhub_financial_schema(),
+            )
+
+        self.config_data.update(user_input)
+        provider = self.config_data.get(CONF_FINANCIAL_PROVIDER, "")
+        title = f"Financial Data - {provider}"
+        await self.async_set_unique_id(f"{DOMAIN}_financial")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(title=title, data=self.config_data)
+
     @staticmethod
     @callback
     def async_get_options_flow(
@@ -510,6 +658,12 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
 
         if tool_type == TOOL_TYPE_WIKIPEDIA:
             return await self.async_step_wikipedia(user_input)
+
+        if tool_type == TOOL_TYPE_WEATHER:
+            return await self.async_step_weather(user_input)
+
+        if tool_type == TOOL_TYPE_FINANCIAL:
+            return await self.async_step_financial_provider(user_input)
 
         return self.async_abort(reason="unknown_tool_type")
 
@@ -641,5 +795,60 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
             return self.async_show_form(step_id=STEP_WIKIPEDIA, data_schema=schema)
 
         self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_weather(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: Weather Forecast settings."""
+        if user_input is None:
+            schema = get_weather_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_WEATHER, data_schema=schema)
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_financial_provider(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: show financial data provider selection with current values."""
+        if user_input is None:
+            schema = get_financial_provider_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(
+                step_id=STEP_FINANCIAL_PROVIDER, data_schema=schema
+            )
+
+        self.config_data.update(user_input)
+
+        provider = user_input.get(CONF_FINANCIAL_PROVIDER)
+        if provider in FINANCIAL_PROVIDER_STEP_MAP:
+            step_id, schema_func = FINANCIAL_PROVIDER_STEP_MAP[provider]
+            schema = schema_func()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=step_id, data_schema=schema)
+
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_finnhub_financial(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: Finnhub Financial Data settings."""
+        if user_input is None:
+            provider = self.config_data.get(CONF_FINANCIAL_PROVIDER)
+            _, schema_func = FINANCIAL_PROVIDER_STEP_MAP[provider]
+            schema = schema_func()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(
+                step_id=STEP_FINNHUB_FINANCIAL, data_schema=schema
+            )
+
+        self.config_data.update(user_input)
+        provider = self.config_data.get(CONF_FINANCIAL_PROVIDER, "")
+        title = f"Financial Data - {provider}"
+        self.hass.config_entries.async_update_entry(
+            self.config_entry, title=title
+        )
         return self.async_create_entry(data=self.config_data)
 
