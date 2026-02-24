@@ -47,13 +47,53 @@
         "data_description": {
           "youtube_api_key": "Get your API key from the Google Cloud Console with YouTube Data API v3 enabled."
         }
+      },
+      "web_provider": {
+        "title": "Configure Web Search",
+        "description": "Select your web search provider.",
+        "data": {
+          "web_search_provider": "Web Search Provider"
+        }
+      },
+      "brave_web": {
+        "title": "Configure Brave Web Search",
+        "description": "Enter your Brave Search API credentials.",
+        "data": {
+          "brave_api_key": "API Key",
+          "brave_web_num_results": "Maximum Number of Results"
+        }
+      },
+      "searxng_web": {
+        "title": "Configure SearXNG Web Search",
+        "description": "Enter your SearXNG instance details.",
+        "data": {
+          "searxng_server_url": "Server URL",
+          "searxng_web_num_results": "Maximum Number of Results",
+          "searxng_web_engines": "Engines"
+        },
+        "data_description": {
+          "searxng_server_url": "Protocol, host, and port, e.g.: http://localhost:8080",
+          "searxng_web_engines": "Comma-separated list of search engines, e.g.: google,bing,duckduckgo. Leave empty to use all enabled engines."
+        }
+      },
+      "wikipedia": {
+        "title": "Configure Wikipedia Search",
+        "description": "No API key required.",
+        "data": {
+          "wikipedia_detail": "Article Detail"
+        },
+        "data_description": {
+          "wikipedia_detail": "Concise returns a short summary. Detailed returns the full introduction section, which uses more LLM tokens."
+        }
       }
     },
     "abort": {
       "image_search_already_configured": "Image Search is already configured. Use the existing entry's options to change settings.",
       "video_search_already_configured": "Video Search is already configured. Use the existing entry's options to change settings.",
+      "web_search_already_configured": "Web Search is already configured. Use the existing entry's options to change settings.",
+      "wikipedia_already_configured": "Wikipedia Search is already configured. Use the existing entry's options to change settings.",
       "unknown_tool_type": "Unknown tool type selected.",
-      "unknown_provider": "Unknown image search provider selected."
+      "unknown_provider": "Unknown search provider selected."
     }
   },
   "options": {
@@ -95,6 +135,43 @@
         },
         "data_description": {
           "youtube_api_key": "Get your API key from the Google Cloud Console with YouTube Data API v3 enabled."
+        }
+      },
+      "web_provider": {
+        "title": "Web Search Options",
+        "description": "Change your web search provider or settings.",
+        "data": {
+          "web_search_provider": "Web Search Provider"
+        }
+      },
+      "brave_web": {
+        "title": "Configure Brave Web Search",
+        "description": "Update your Brave Search API credentials.",
+        "data": {
+          "brave_api_key": "API Key",
+          "brave_web_num_results": "Maximum Number of Results"
+        }
+      },
+      "searxng_web": {
+        "title": "Configure SearXNG Web Search",
+        "description": "Update your SearXNG instance details.",
+        "data": {
+          "searxng_server_url": "Server URL",
+          "searxng_web_num_results": "Maximum Number of Results",
+          "searxng_web_engines": "Engines"
+        },
+        "data_description": {
+          "searxng_web_engines": "Comma-separated list of search engines, e.g.: google,bing,duckduckgo. Leave empty to use all enabled engines."
+        }
+      },
+      "wikipedia": {
+        "title": "Wikipedia Search Options",
+        "description": "Update your Wikipedia search settings.",
+        "data": {
+          "wikipedia_detail": "Article Detail"
+        },
+        "data_description": {
+          "wikipedia_detail": "Concise returns a short summary. Detailed returns the full introduction section, which uses more LLM tokens."
         }
       }
     }

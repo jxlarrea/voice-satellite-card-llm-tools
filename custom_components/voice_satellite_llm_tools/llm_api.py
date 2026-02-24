@@ -7,11 +7,15 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import llm
 
 from .brave_image_search import BraveImageSearchTool
+from .brave_web_search import BraveWebSearchTool
 from .const import (
     CONF_IMAGE_SEARCH_PROVIDER,
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
     CONF_TOOL_TYPE,
+    CONF_WEB_SEARCH_PROVIDER,
+    CONF_WEB_SEARCH_PROVIDER_BRAVE,
+    CONF_WEB_SEARCH_PROVIDER_SEARXNG,
     CONF_YOUTUBE_API_KEY,
     DOMAIN,
     IMAGE_SEARCH_API_ID,
@@ -19,11 +23,21 @@ from .const import (
     IMAGE_SEARCH_SERVICES_PROMPT,
     TOOL_TYPE_IMAGE_SEARCH,
     TOOL_TYPE_VIDEO_SEARCH,
+    TOOL_TYPE_WEB_SEARCH,
+    TOOL_TYPE_WIKIPEDIA,
     VIDEO_SEARCH_API_ID,
     VIDEO_SEARCH_API_NAME,
     VIDEO_SEARCH_SERVICES_PROMPT,
+    WEB_SEARCH_API_ID,
+    WEB_SEARCH_API_NAME,
+    WEB_SEARCH_SERVICES_PROMPT,
+    WIKIPEDIA_API_ID,
+    WIKIPEDIA_API_NAME,
+    WIKIPEDIA_SERVICES_PROMPT,
 )
 from .searxng_image_search import SearXNGImageSearchTool
+from .searxng_web_search import SearXNGWebSearchTool
+from .wikipedia_web_search import WikipediaWebSearchTool
 from .youtube_video_search import YouTubeVideoSearchTool
 
 _LOGGER = logging.getLogger(__name__)
@@ -39,6 +53,19 @@ IMAGE_SEARCH_TOOLS_MAP = [
         lambda data: data.get(CONF_IMAGE_SEARCH_PROVIDER)
         == CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
         SearXNGImageSearchTool,
+    ),
+]
+
+WEB_SEARCH_TOOLS_MAP = [
+    (
+        lambda data: data.get(CONF_WEB_SEARCH_PROVIDER)
+        == CONF_WEB_SEARCH_PROVIDER_BRAVE,
+        BraveWebSearchTool,
+    ),
+    (
+        lambda data: data.get(CONF_WEB_SEARCH_PROVIDER)
+        == CONF_WEB_SEARCH_PROVIDER_SEARXNG,
+        SearXNGWebSearchTool,
     ),
 ]
 
@@ -104,6 +131,64 @@ class VideoSearchAPI(llm.API):
         )
 
 
+class WebSearchAPI(llm.API):
+    """Web Search API for LLM integration."""
+
+    def __init__(self, hass: HomeAssistant, config_data: dict[str, Any]) -> None:
+        """Initialize the Web Search API."""
+        super().__init__(
+            hass=hass,
+            id=WEB_SEARCH_API_ID,
+            name=WEB_SEARCH_API_NAME,
+        )
+        self._config_data = config_data
+
+    def get_enabled_tools(self) -> list:
+        """Return list of tool instances for the configured provider."""
+        tools = []
+        for condition, tool_class in WEB_SEARCH_TOOLS_MAP:
+            if callable(condition) and condition(self._config_data):
+                tools.append(tool_class(self._config_data, self.hass))
+        return tools
+
+    async def async_get_api_instance(
+        self, llm_context: llm.LLMContext
+    ) -> llm.APIInstance:
+        """Return an API instance with enabled tools."""
+        tools = self.get_enabled_tools()
+        return llm.APIInstance(
+            api=self,
+            api_prompt=WEB_SEARCH_SERVICES_PROMPT,
+            llm_context=llm_context,
+            tools=tools,
+        )
+
+
+class WikipediaSearchAPI(llm.API):
+    """Wikipedia Search API for LLM integration."""
+
+    def __init__(self, hass: HomeAssistant, config_data: dict[str, Any]) -> None:
+        """Initialize the Wikipedia Search API."""
+        super().__init__(
+            hass=hass,
+            id=WIKIPEDIA_API_ID,
+            name=WIKIPEDIA_API_NAME,
+        )
+        self._config_data = config_data
+
+    async def async_get_api_instance(
+        self, llm_context: llm.LLMContext
+    ) -> llm.APIInstance:
+        """Return an API instance with the Wikipedia search tool."""
+        tools = [WikipediaWebSearchTool(self._config_data, self.hass)]
+        return llm.APIInstance(
+            api=self,
+            api_prompt=WIKIPEDIA_SERVICES_PROMPT,
+            llm_context=llm_context,
+            tools=tools,
+        )
+
+
 async def setup_llm_api(
     hass: HomeAssistant, config_data: dict[str, Any], entry_id: str
 ) -> None:
@@ -139,6 +224,29 @@ async def setup_llm_api(
             _LOGGER.warning(
                 "YouTube API key not configured, Video Search API not registered"
             )
+
+    elif tool_type == TOOL_TYPE_WEB_SEARCH:
+        api = WebSearchAPI(hass, config_data)
+        if api.get_enabled_tools():
+            unreg = llm.async_register_api(hass, api)
+            hass.data[DOMAIN]["entries"][entry_id] = {
+                "config": config_data.copy(),
+                "unregister_api": unreg,
+            }
+            _LOGGER.info("Registered LLM API: %s", WEB_SEARCH_API_NAME)
+        else:
+            _LOGGER.warning(
+                "No web search provider enabled, LLM API not registered"
+            )
+
+    elif tool_type == TOOL_TYPE_WIKIPEDIA:
+        api = WikipediaSearchAPI(hass, config_data)
+        unreg = llm.async_register_api(hass, api)
+        hass.data[DOMAIN]["entries"][entry_id] = {
+            "config": config_data.copy(),
+            "unregister_api": unreg,
+        }
+        _LOGGER.info("Registered LLM API: %s", WIKIPEDIA_API_NAME)
 
 
 async def cleanup_llm_api(hass: HomeAssistant, entry_id: str) -> None:

@@ -1,6 +1,6 @@
 {
   "name": "voice-satellite-card-llm-tools",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "scripts": {
     "dev": "xcopy /E /I /Y \"custom_components\\voice_satellite_llm_tools\" \"\\\\hassio\\config\\custom_components\\voice_satellite_llm_tools\""

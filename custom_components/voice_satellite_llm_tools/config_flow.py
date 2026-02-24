@@ -25,6 +25,7 @@ from .const import (
     CONF_BRAVE_API_KEY,
     CONF_BRAVE_IMAGE_NUM_RESULTS,
     CONF_BRAVE_SAFESEARCH,
+    CONF_BRAVE_WEB_NUM_RESULTS,
     CONF_IMAGE_SEARCH_PROVIDER,
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
@@ -32,15 +33,28 @@ from .const import (
     CONF_SEARXNG_ENGINES,
     CONF_SEARXNG_IMAGE_NUM_RESULTS,
     CONF_SEARXNG_URL,
+    CONF_SEARXNG_WEB_ENGINES,
+    CONF_SEARXNG_WEB_NUM_RESULTS,
     CONF_TOOL_TYPE,
     CONF_TOOL_TYPES,
+    CONF_WEB_SEARCH_PROVIDER,
+    CONF_WEB_SEARCH_PROVIDER_BRAVE,
+    CONF_WEB_SEARCH_PROVIDER_SEARXNG,
+    CONF_WEB_SEARCH_PROVIDERS,
+    CONF_WIKIPEDIA_DETAIL,
+    CONF_WIKIPEDIA_DETAIL_OPTIONS,
     CONF_YOUTUBE_API_KEY,
     CONF_YOUTUBE_NUM_RESULTS,
     DOMAIN,
     IMAGE_SEARCH_DEFAULTS,
     TOOL_TYPE_IMAGE_SEARCH,
     TOOL_TYPE_VIDEO_SEARCH,
+    TOOL_TYPE_WEB_SEARCH,
+    TOOL_TYPE_WIKIPEDIA,
     VIDEO_SEARCH_DEFAULTS,
+    WEB_SEARCH_DEFAULTS,
+    WIKIPEDIA_DEFAULTS,
+    WIKIPEDIA_DETAIL_CONCISE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -51,6 +65,10 @@ STEP_IMAGE_PROVIDER = "image_provider"
 STEP_BRAVE = "brave"
 STEP_SEARXNG = "searxng"
 STEP_YOUTUBE = "youtube"
+STEP_WEB_PROVIDER = "web_provider"
+STEP_BRAVE_WEB = "brave_web"
+STEP_SEARXNG_WEB = "searxng_web"
+STEP_WIKIPEDIA = "wikipedia"
 
 SAFESEARCH_OPTIONS = {
     "off": "Off",
@@ -169,10 +187,85 @@ def get_youtube_schema(defaults: dict | None = None) -> vol.Schema:
     )
 
 
+def get_web_provider_schema() -> vol.Schema:
+    """Schema for web search provider selection step."""
+    return vol.Schema(
+        {
+            vol.Required(CONF_WEB_SEARCH_PROVIDER): SelectSelector(
+                SelectSelectorConfig(
+                    mode=SelectSelectorMode.DROPDOWN,
+                    options=_options_to_selections(CONF_WEB_SEARCH_PROVIDERS),
+                )
+            ),
+        }
+    )
+
+
+def get_brave_web_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for Brave Web Search configuration."""
+    d = defaults or WEB_SEARCH_DEFAULTS
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_BRAVE_API_KEY,
+                default=d.get(CONF_BRAVE_API_KEY, ""),
+            ): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
+            vol.Required(
+                CONF_BRAVE_WEB_NUM_RESULTS,
+                default=d.get(CONF_BRAVE_WEB_NUM_RESULTS, 3),
+            ): _num_results_selector(unit="results", max_val=6),
+        }
+    )
+
+
+def get_searxng_web_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for SearXNG Web Search configuration."""
+    d = defaults or WEB_SEARCH_DEFAULTS
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_SEARXNG_URL,
+                default=d.get(CONF_SEARXNG_URL, ""),
+            ): str,
+            vol.Required(
+                CONF_SEARXNG_WEB_NUM_RESULTS,
+                default=d.get(CONF_SEARXNG_WEB_NUM_RESULTS, 3),
+            ): _num_results_selector(unit="results", max_val=6),
+            vol.Optional(
+                CONF_SEARXNG_WEB_ENGINES,
+                default=d.get(CONF_SEARXNG_WEB_ENGINES, ""),
+            ): str,
+        }
+    )
+
+
+def get_wikipedia_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for Wikipedia Search configuration."""
+    d = defaults or WIKIPEDIA_DEFAULTS
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_WIKIPEDIA_DETAIL,
+                default=d.get(CONF_WIKIPEDIA_DETAIL, WIKIPEDIA_DETAIL_CONCISE),
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    mode=SelectSelectorMode.DROPDOWN,
+                    options=_options_to_selections(CONF_WIKIPEDIA_DETAIL_OPTIONS),
+                )
+            ),
+        }
+    )
+
+
 # Map provider to (step_id, schema_func)
 PROVIDER_STEP_MAP = {
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE: (STEP_BRAVE, get_brave_schema),
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG: (STEP_SEARXNG, get_searxng_schema),
+}
+
+WEB_PROVIDER_STEP_MAP = {
+    CONF_WEB_SEARCH_PROVIDER_BRAVE: (STEP_BRAVE_WEB, get_brave_web_schema),
+    CONF_WEB_SEARCH_PROVIDER_SEARXNG: (STEP_SEARXNG_WEB, get_searxng_web_schema),
 }
 
 
@@ -219,6 +312,22 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
             return self.async_show_form(
                 step_id=STEP_YOUTUBE,
                 data_schema=get_youtube_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_WEB_SEARCH:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_WEB_SEARCH):
+                return self.async_abort(reason="web_search_already_configured")
+            return self.async_show_form(
+                step_id=STEP_WEB_PROVIDER,
+                data_schema=get_web_provider_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_WIKIPEDIA:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_WIKIPEDIA):
+                return self.async_abort(reason="wikipedia_already_configured")
+            return self.async_show_form(
+                step_id=STEP_WIKIPEDIA,
+                data_schema=get_wikipedia_schema(),
             )
 
         return self.async_abort(reason="unknown_tool_type")
@@ -294,6 +403,77 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
             title="Video Search - YouTube", data=self.config_data
         )
 
+    async def async_step_web_provider(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Step 2 (web): Select web search provider."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_WEB_PROVIDER,
+                data_schema=get_web_provider_schema(),
+            )
+
+        self.config_data.update(user_input)
+        provider = user_input.get(CONF_WEB_SEARCH_PROVIDER)
+
+        if provider in WEB_PROVIDER_STEP_MAP:
+            step_id, schema_func = WEB_PROVIDER_STEP_MAP[provider]
+            return self.async_show_form(
+                step_id=step_id,
+                data_schema=schema_func(),
+            )
+
+        return self.async_abort(reason="unknown_provider")
+
+    async def _handle_web_provider_step(
+        self, step_id: str, user_input: dict[str, Any] | None
+    ) -> config_entries.ConfigFlowResult:
+        """Generic handler for web search provider config steps."""
+        if user_input is None:
+            _, schema_func = WEB_PROVIDER_STEP_MAP[
+                self.config_data[CONF_WEB_SEARCH_PROVIDER]
+            ]
+            return self.async_show_form(
+                step_id=step_id,
+                data_schema=schema_func(),
+            )
+
+        self.config_data.update(user_input)
+        provider = self.config_data.get(CONF_WEB_SEARCH_PROVIDER, "")
+        title = f"Web Search - {provider}"
+        await self.async_set_unique_id(f"{DOMAIN}_web_search")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(title=title, data=self.config_data)
+
+    async def async_step_brave_web(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure Brave Web Search settings."""
+        return await self._handle_web_provider_step(STEP_BRAVE_WEB, user_input)
+
+    async def async_step_searxng_web(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure SearXNG Web Search settings."""
+        return await self._handle_web_provider_step(STEP_SEARXNG_WEB, user_input)
+
+    async def async_step_wikipedia(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure Wikipedia Search settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_WIKIPEDIA,
+                data_schema=get_wikipedia_schema(),
+            )
+
+        self.config_data.update(user_input)
+        await self.async_set_unique_id(f"{DOMAIN}_wikipedia")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(
+            title="Wikipedia Search", data=self.config_data
+        )
+
     @staticmethod
     @callback
     def async_get_options_flow(
@@ -324,6 +504,12 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
 
         if tool_type == TOOL_TYPE_VIDEO_SEARCH:
             return await self.async_step_youtube(user_input)
+
+        if tool_type == TOOL_TYPE_WEB_SEARCH:
+            return await self.async_step_web_provider(user_input)
+
+        if tool_type == TOOL_TYPE_WIKIPEDIA:
+            return await self.async_step_wikipedia(user_input)
 
         return self.async_abort(reason="unknown_tool_type")
 
@@ -391,3 +577,69 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
 
         self.config_data.update(user_input)
         return self.async_create_entry(data=self.config_data)
+
+    async def async_step_web_provider(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: show web search provider selection with current values."""
+        if user_input is None:
+            schema = get_web_provider_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(
+                step_id=STEP_WEB_PROVIDER, data_schema=schema
+            )
+
+        self.config_data.update(user_input)
+
+        provider = user_input.get(CONF_WEB_SEARCH_PROVIDER)
+        if provider in WEB_PROVIDER_STEP_MAP:
+            step_id, schema_func = WEB_PROVIDER_STEP_MAP[provider]
+            schema = schema_func()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=step_id, data_schema=schema)
+
+        return self.async_create_entry(data=self.config_data)
+
+    async def _handle_web_provider_options_step(
+        self, step_id: str, user_input: dict[str, Any] | None
+    ) -> config_entries.ConfigFlowResult:
+        """Generic handler for web search provider options steps."""
+        if user_input is None:
+            provider = self.config_data.get(CONF_WEB_SEARCH_PROVIDER)
+            _, schema_func = WEB_PROVIDER_STEP_MAP[provider]
+            schema = schema_func()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=step_id, data_schema=schema)
+
+        self.config_data.update(user_input)
+        provider = self.config_data.get(CONF_WEB_SEARCH_PROVIDER, "")
+        title = f"Web Search - {provider}"
+        self.hass.config_entries.async_update_entry(
+            self.config_entry, title=title
+        )
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_brave_web(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: Brave Web Search settings."""
+        return await self._handle_web_provider_options_step(STEP_BRAVE_WEB, user_input)
+
+    async def async_step_searxng_web(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: SearXNG Web Search settings."""
+        return await self._handle_web_provider_options_step(STEP_SEARXNG_WEB, user_input)
+
+    async def async_step_wikipedia(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: Wikipedia Search settings."""
+        if user_input is None:
+            schema = get_wikipedia_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_WIKIPEDIA, data_schema=schema)
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)
+
