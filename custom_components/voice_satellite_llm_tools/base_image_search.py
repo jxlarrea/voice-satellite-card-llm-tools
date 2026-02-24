@@ -53,7 +53,7 @@ class BaseImageSearchTool(BaseTool):
 
     def _get_num_results(self, tool_input: llm.ToolInput) -> int:
         """Resolve number of results, capped at the configured maximum."""
-        configured_max = self._get_configured_num_results()
+        configured_max = min(self._get_configured_num_results(), 10)
         explicit = tool_input.tool_args.get("num_results")
         if explicit is not None:
             return min(explicit, configured_max)
@@ -152,9 +152,10 @@ class BaseImageSearchTool(BaseTool):
                 for r in results
             ],
             "instruction": (
-                "Do NOT include image URLs or markdown image syntax in your response. "
-                "The images will be displayed automatically by the UI. "
-                "Simply tell the user what you found in plain text, e.g. "
-                "'Here are some cat images I found from Unsplash and Google Images.'"
+                "Do NOT list individual image titles, URLs, sources, or use markdown image syntax. "
+                "The results are displayed visually by the UI — the user can already see them. "
+                "Respond with a single brief sentence summarizing what you found, e.g. "
+                "'I found some cat images for you.' or "
+                "'Here are some pictures of the Eiffel Tower at night.'"
             ),
         }

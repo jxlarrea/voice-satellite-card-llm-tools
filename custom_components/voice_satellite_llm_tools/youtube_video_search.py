@@ -41,8 +41,8 @@ class YouTubeVideoSearchTool(BaseTool):
             vol.Required("query", description="The video search query"): str,
             vol.Optional(
                 "num_results",
-                description="Number of video results to return (1-10)",
-            ): vol.All(int, vol.Range(min=1, max=10)),
+                description="Number of video results to return (1-6)",
+            ): vol.All(int, vol.Range(min=1, max=6)),
             vol.Optional(
                 "auto_play",
                 description=(
@@ -56,7 +56,7 @@ class YouTubeVideoSearchTool(BaseTool):
 
     def _get_num_results(self, tool_input: llm.ToolInput) -> int:
         """Resolve number of results, capped at the configured maximum."""
-        configured_max = int(self.config.get(CONF_YOUTUBE_NUM_RESULTS, 3))
+        configured_max = min(int(self.config.get(CONF_YOUTUBE_NUM_RESULTS, 3)), 6)
         explicit = tool_input.tool_args.get("num_results")
         if explicit is not None:
             return min(explicit, configured_max)
@@ -201,7 +201,6 @@ class YouTubeVideoSearchTool(BaseTool):
                     "video_url": f"https://www.youtube.com/watch?v={video_id}",
                     "video_id": video_id,
                     "title": snippet.get("title", ""),
-                    "description": snippet.get("description", ""),
                     "thumbnail_url": thumbnail_url,
                     "channel_name": snippet.get("channelTitle", ""),
                     "published_at": snippet.get("publishedAt", ""),
@@ -223,9 +222,10 @@ class YouTubeVideoSearchTool(BaseTool):
             "auto_play": auto_play,
             "results": results,
             "instruction": (
-                "Do NOT include video URLs in your response. "
-                "The videos will be displayed automatically by the UI. "
-                "Simply tell the user what you found in plain text, e.g. "
-                "'Here are some cooking tutorial videos I found on YouTube.'"
+                "Do NOT list individual video titles, durations, view counts, or URLs. "
+                "The results are displayed visually by the UI — the user can already see them. "
+                "Respond with a single brief sentence summarizing what you found, e.g. "
+                "'I found some cat videos on YouTube for you.' or "
+                "'Here are some sourdough bread tutorials.'"
             ),
         }

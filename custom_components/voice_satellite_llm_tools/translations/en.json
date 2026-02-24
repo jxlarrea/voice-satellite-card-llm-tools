@@ -20,7 +20,7 @@
         "description": "Enter your Brave Search API credentials.",
         "data": {
           "brave_api_key": "API Key",
-          "brave_image_num_results": "Default Number of Results",
+          "brave_image_num_results": "Maximum Number of Results",
           "brave_safesearch": "SafeSearch"
         }
       },
@@ -29,7 +29,7 @@
         "description": "Enter your SearXNG instance details.",
         "data": {
           "searxng_server_url": "Server URL",
-          "searxng_image_num_results": "Default Number of Results",
+          "searxng_image_num_results": "Maximum Number of Results",
           "searxng_engines": "Engines"
         },
         "data_description": {
@@ -42,7 +42,7 @@
         "description": "Enter your YouTube Data API v3 key.",
         "data": {
           "youtube_api_key": "YouTube API Key",
-          "youtube_num_results": "Default Number of Results"
+          "youtube_num_results": "Maximum Number of Results"
         },
         "data_description": {
           "youtube_api_key": "Get your API key from the Google Cloud Console with YouTube Data API v3 enabled."
@@ -70,7 +70,7 @@
         "description": "Update your Brave Search API credentials.",
         "data": {
           "brave_api_key": "API Key",
-          "brave_image_num_results": "Default Number of Results",
+          "brave_image_num_results": "Maximum Number of Results",
           "brave_safesearch": "SafeSearch"
         }
       },
@@ -79,7 +79,7 @@
         "description": "Update your SearXNG instance details.",
         "data": {
           "searxng_server_url": "Server URL",
-          "searxng_image_num_results": "Default Number of Results",
+          "searxng_image_num_results": "Maximum Number of Results",
           "searxng_engines": "Engines"
         },
         "data_description": {
@@ -91,7 +91,7 @@
         "description": "Update your YouTube video search settings.",
         "data": {
           "youtube_api_key": "YouTube API Key",
-          "youtube_num_results": "Default Number of Results"
+          "youtube_num_results": "Maximum Number of Results"
         },
         "data_description": {
           "youtube_api_key": "Get your API key from the Google Cloud Console with YouTube Data API v3 enabled."

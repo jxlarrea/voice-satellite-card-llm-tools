@@ -64,12 +64,12 @@ def _options_to_selections(opts: dict) -> list[SelectOptionDict]:
     return [SelectOptionDict(value=key, label=val) for key, val in opts.items()]
 
 
-def _num_results_selector(unit: str = "images") -> NumberSelector:
-    """Create a number selector for result count (1-10)."""
+def _num_results_selector(unit: str = "images", max_val: int = 10) -> NumberSelector:
+    """Create a number selector for result count."""
     return NumberSelector(
         NumberSelectorConfig(
             min=1,
-            max=10,
+            max=max_val,
             step=1,
             mode=NumberSelectorMode.SLIDER,
             unit_of_measurement=unit,
@@ -164,7 +164,7 @@ def get_youtube_schema(defaults: dict | None = None) -> vol.Schema:
             vol.Required(
                 CONF_YOUTUBE_NUM_RESULTS,
                 default=d.get(CONF_YOUTUBE_NUM_RESULTS, 3),
-            ): _num_results_selector(unit="videos"),
+            ): _num_results_selector(unit="videos", max_val=6),
         }
     )
 
