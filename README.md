@@ -1,4 +1,4 @@
-# Voice Satellite Card - LLM Tools
+# <img width="48" height="48" alt="icon" src="https://github.com/user-attachments/assets/c852d278-a2e8-491a-9fe9-49f511ece3de" /> Voice Satellite Card - LLM Tools
 
 Extend your voice assistant's capabilities with **web, Wikipedia, image, and video search tools** for Home Assistant's LLM integrations. When paired with the [Voice Satellite Card](https://github.com/jxlarrea/voice-satellite-card-integration), search results are displayed directly in the card UI.
 
