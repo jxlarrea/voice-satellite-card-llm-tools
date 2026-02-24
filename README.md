@@ -49,6 +49,10 @@ Search YouTube for videos with full metadata:
 
 Video search is configured as a separate entry and can be added independently from image search.
 
+### Auto Display / Auto Play
+
+Both image and video search support automatic display. When the conversation agent determines that the user is looking for something specific (e.g. "show me the Mona Lisa", "play the latest MrBeast video"), it will signal the card to immediately display or play the first result. For broader searches (e.g. "find me pictures of cats", "search for guitar tutorials"), results are shown as a browsable list instead. This behavior is decided by the conversation agent based on the user's intent — no configuration is needed.
+
 ### Result Caching
 
 All search results are cached in memory with a configurable TTL (default: 1 hour). Repeated searches for the same query return instantly without consuming API quota.
