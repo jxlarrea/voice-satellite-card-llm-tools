@@ -5,7 +5,7 @@
     "@jxlarrea"
   ],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": ["http"],
   "documentation": "https://github.com/jxlarrea/voice-satellite-card-llm-tools",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/jxlarrea/voice-satellite-card-llm-tools/issues",
