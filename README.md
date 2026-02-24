@@ -43,7 +43,7 @@ Search YouTube for videos with full metadata:
 
 | Provider | Description |
 |----------|-------------|
-| **YouTube Data API v3** | Uses the [YouTube Data API](https://developers.google.com/youtube/v3). Requires an API key with YouTube Data API v3 enabled. Returns video titles, thumbnails, channel names, durations, view counts, and more. |
+| **YouTube Data API v3** | Uses the [YouTube Data API](https://developers.google.com/youtube/v3). Requires an API key with YouTube Data API v3 enabled. Returns video titles, thumbnails, channel names, durations, and view counts. |
 
 Video search is configured as a separate entry and can be added independently from image search.
 
@@ -81,16 +81,16 @@ Each tool (Image Search, Video Search) is configured as a separate entry, so you
 2. Search for **Voice Satellite Card LLM Tools**
 3. Select **Image Search** as the tool type
 4. Choose your image search provider (Brave or SearXNG)
-5. Enter your provider credentials and configure the default number of results
-6. Go to your **Assist Pipeline** settings and enable the **Image Search Services** LLM API for your conversation agent
+5. Enter your provider credentials and configure the maximum number of results
+6. Go to your **Assist Pipeline** settings and enable the **Voice Satellite Card: Image Search** LLM API for your conversation agent
 
 ### Adding Video Search
 
 1. Go to **Settings > Devices & Services > Add Integration**
 2. Search for **Voice Satellite Card LLM Tools**
 3. Select **Video Search** as the tool type
-4. Enter your YouTube Data API v3 key and configure the default number of results
-5. Go to your **Assist Pipeline** settings and enable the **Video Search Services** LLM API for your conversation agent
+4. Enter your YouTube Data API v3 key and configure the maximum number of results
+5. Go to your **Assist Pipeline** settings and enable the **Voice Satellite Card: Video Search** LLM API for your conversation agent
 
 > **Note:** Only one Image Search entry and one Video Search entry are allowed at a time. To change providers or settings, go to the entry's options flow (**Settings > Devices & Services > Voice Satellite Card LLM Tools > Configure**). To disable a tool, simply remove its entry.
 
@@ -127,21 +127,21 @@ Each tool (Image Search, Video Search) is configured as a separate entry, so you
 | **Server URL** | SearXNG only — your instance URL |
 | **Engines** | SearXNG only — comma-separated list of image engines |
 | **SafeSearch** | Brave only — off, moderate, or strict |
-| **Default Number of Results** | 1-10 images per search (default: 3) |
+| **Maximum Number of Results** | 1-10 images per search (default: 3) |
 
 ### Video Search
 
 | Option | Description |
 |--------|-------------|
 | **YouTube API Key** | Your YouTube Data API v3 key |
-| **Default Number of Results** | 1-10 videos per search (default: 3) |
+| **Maximum Number of Results** | 1-6 videos per search (default: 3) |
 
 ## Troubleshooting
 
 ### The assistant doesn't search for images/videos
 
 1. **Check your conversation agent:** The built-in Home Assistant conversation agent does not support LLM tool calling. Use a third-party agent like OpenAI, Google Generative AI, Anthropic, or Ollama.
-2. **Enable the LLM APIs:** Go to your Assist pipeline settings and make sure the **Image Search Services** and/or **Video Search Services** APIs are enabled for your conversation agent.
+2. **Enable the LLM APIs:** Go to your Assist pipeline settings and make sure the **Voice Satellite Card: Image Search** and/or **Voice Satellite Card: Video Search** APIs are enabled for your conversation agent.
 3. **Verify API credentials:** Double-check that your API keys are correct and have the required APIs enabled.
 
 ### Search returns no results
