@@ -10,6 +10,8 @@ Extend your voice assistant's capabilities with **image and video search tools**
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/jxlarrea)
 
+![Screenshot](https://github.com/user-attachments/assets/621ee33f-83db-45ec-83ef-39038008e7dc)
+
 ## How It Works
 
 This integration registers additional **LLM API tools** with Home Assistant. When a conversation agent (OpenAI, Google Generative AI, Anthropic, Ollama, etc.) receives a request to find images or videos, it can call these tools to fetch results from the configured search providers. The Voice Satellite Card then renders the results visually.
