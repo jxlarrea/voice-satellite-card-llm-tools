@@ -146,4 +146,4 @@ No setup required — uses the public Wikipedia API.
 
 ## License
 
-ISC License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
