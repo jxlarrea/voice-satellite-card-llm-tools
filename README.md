@@ -6,7 +6,6 @@ Extend your voice assistant's capabilities with **web, Wikipedia, image, video s
 [![Downloads](https://img.shields.io/github/downloads/jxlarrea/voice-satellite-card-llm-tools/total?style=for-the-badge&label=Downloads&color=red)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases)
 [![version](https://shields.io/github/v/release/jxlarrea/voice-satellite-card-llm-tools?style=for-the-badge&color=orange)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases)
 [![Build](https://img.shields.io/github/actions/workflow/status/jxlarrea/voice-satellite-card-llm-tools/release.yml?style=for-the-badge&label=Build)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/actions/workflows/release.yml)
-
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/jxlarrea)
 
 ![Screenshot](https://github.com/user-attachments/assets/621ee33f-83db-45ec-83ef-39038008e7dc)
