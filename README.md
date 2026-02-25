@@ -16,6 +16,12 @@ Extend your voice assistant's capabilities with **web, Wikipedia, image, video s
 
 - [How It Works](#how-it-works)
 - [Features](#features)
+  - [Web Search](#web-search)
+  - [Wikipedia](#wikipedia)
+  - [Image Search](#image-search)
+  - [Video Search](#video-search)
+  - [Weather Forecast](#weather-forecast)
+  - [Financial Data](#financial-data)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Setup](#setup)
