@@ -66,9 +66,13 @@ Search YouTube via the [YouTube Data API v3](https://developers.google.com/youtu
 
 ### Weather Forecast
 
+![Weather](https://github.com/user-attachments/assets/5c439e57-3047-4457-a18a-f8dbb778e1f7)
+
 Get weather forecasts using your existing Home Assistant weather entities — no additional API key required. Supports today, tomorrow, specific days of the week, and weekly outlooks. Optionally include hour-by-hour detail, current temperature, and humidity readings from dedicated sensors. Weather condition icons are displayed alongside forecast data.
 
 ### Financial Data
+
+![Stocks](https://github.com/user-attachments/assets/20f66567-7e9c-4d69-af7d-cad699c6149e)
 
 Look up stock prices, cryptocurrency prices, and convert currencies using [Finnhub](https://finnhub.io/) (free tier available). Stocks return current price, daily change, high/low, and company logo. Cryptocurrency queries (BTC, ETH, DOGE, and 25+ others) are automatically resolved via [CoinGecko](https://www.coingecko.com/) for accurate pricing. Currency conversion supports all major forex pairs.
 
