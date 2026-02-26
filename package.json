@@ -1,6 +1,6 @@
 {
   "name": "voice-satellite-card-llm-tools",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "index.js",
   "scripts": {
     "dev": "pushd \\\\hassio\\config\\custom_components\\voice_satellite_llm_tools && mkdir weather_icons 2>nul & popd & xcopy /E /I /Y custom_components\\voice_satellite_llm_tools \\\\hassio\\config\\custom_components\\voice_satellite_llm_tools"
