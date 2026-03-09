@@ -1,4 +1,4 @@
-"""The Voice Satellite Card LLM Tools integration."""
+"""The Voice Satellite LLM Tools integration."""
 
 import logging
 from pathlib import Path
@@ -17,7 +17,7 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the Voice Satellite Card LLM Tools integration."""
+    """Set up the Voice Satellite LLM Tools integration."""
     hass.data.setdefault(DOMAIN, {"cache": {}, "entries": {}})
 
     icons_dir = str(Path(__file__).parent / "weather_icons")
@@ -29,7 +29,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Voice Satellite Card LLM Tools from a config entry."""
+    """Set up Voice Satellite LLM Tools from a config entry."""
     _LOGGER.info("Setting up %s for entry: %s", ADDON_NAME, entry.entry_id)
     config = {**entry.data, **(entry.options or {})}
     await setup_llm_api(hass, config, entry.entry_id)

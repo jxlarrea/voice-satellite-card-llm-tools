@@ -1,7 +1,7 @@
-"""Constants for the Voice Satellite Card LLM Tools integration."""
+"""Constants for the Voice Satellite LLM Tools integration."""
 
 DOMAIN = "voice_satellite_llm_tools"
-ADDON_NAME = "Voice Satellite Card LLM Tools"
+ADDON_NAME = "Voice Satellite LLM Tools"
 WEATHER_ICONS_PATH = f"/api/{DOMAIN}/weather_icons"
 
 # Tool type selection
@@ -23,7 +23,7 @@ CONF_TOOL_TYPES = {
 }
 
 # LLM API identifiers
-IMAGE_SEARCH_API_NAME = "Voice Satellite Card: Image Search"
+IMAGE_SEARCH_API_NAME = "Voice Satellite: Image Search"
 IMAGE_SEARCH_API_ID = "voice_satellite_llm_tools_image_search"
 
 IMAGE_SEARCH_SERVICES_PROMPT = (
@@ -36,7 +36,7 @@ IMAGE_SEARCH_SERVICES_PROMPT = (
 )
 
 # Video Search LLM API identifiers
-VIDEO_SEARCH_API_NAME = "Voice Satellite Card: Video Search"
+VIDEO_SEARCH_API_NAME = "Voice Satellite: Video Search"
 VIDEO_SEARCH_API_ID = "voice_satellite_llm_tools_video_search"
 
 VIDEO_SEARCH_SERVICES_PROMPT = (
@@ -49,7 +49,7 @@ VIDEO_SEARCH_SERVICES_PROMPT = (
 )
 
 # Web Search LLM API identifiers
-WEB_SEARCH_API_NAME = "Voice Satellite Card: Web Search"
+WEB_SEARCH_API_NAME = "Voice Satellite: Web Search"
 WEB_SEARCH_API_ID = "voice_satellite_llm_tools_web_search"
 
 WEB_SEARCH_SERVICES_PROMPT = (
@@ -59,7 +59,7 @@ WEB_SEARCH_SERVICES_PROMPT = (
 )
 
 # Wikipedia Search LLM API identifiers
-WIKIPEDIA_API_NAME = "Voice Satellite Card: Wikipedia"
+WIKIPEDIA_API_NAME = "Voice Satellite: Wikipedia"
 WIKIPEDIA_API_ID = "voice_satellite_llm_tools_wikipedia"
 
 WIKIPEDIA_SERVICES_PROMPT = (
@@ -69,7 +69,7 @@ WIKIPEDIA_SERVICES_PROMPT = (
 )
 
 # Weather Forecast LLM API identifiers
-WEATHER_API_NAME = "Voice Satellite Card: Weather Forecast"
+WEATHER_API_NAME = "Voice Satellite: Weather Forecast"
 WEATHER_API_ID = "voice_satellite_llm_tools_weather"
 
 WEATHER_SERVICES_PROMPT = (
@@ -127,7 +127,7 @@ CONF_WIKIPEDIA_DETAIL_OPTIONS = {
 }
 
 # Financial Data LLM API identifiers
-FINANCIAL_API_NAME = "Voice Satellite Card: Financial Data"
+FINANCIAL_API_NAME = "Voice Satellite: Financial Data"
 FINANCIAL_API_ID = "voice_satellite_llm_tools_financial"
 
 FINANCIAL_SERVICES_PROMPT = (

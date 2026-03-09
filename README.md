@@ -1,4 +1,4 @@
-# <img width="48" height="48" alt="icon" src="https://github.com/user-attachments/assets/c852d278-a2e8-491a-9fe9-49f511ece3de" /> Voice Satellite Card - LLM Tools
+# <img width="48" height="48" alt="icon" src="https://github.com/user-attachments/assets/c852d278-a2e8-491a-9fe9-49f511ece3de" /> Voice Satellite - LLM Tools
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-blue.svg?style=for-the-badge)](https://www.hacs.xyz/docs/faq/custom_repositories/)
 [![Downloads](https://img.shields.io/github/downloads/jxlarrea/voice-satellite-card-llm-tools/total?style=for-the-badge&label=Downloads&color=red)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases)
@@ -6,7 +6,7 @@
 [![Build](https://img.shields.io/github/actions/workflow/status/jxlarrea/voice-satellite-card-llm-tools/release.yml?style=for-the-badge&label=Build)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/actions/workflows/release.yml)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/jxlarrea)
 
-Extend your voice assistant's capabilities with **web, Wikipedia, image, video search, weather forecast, and financial data tools** for Home Assistant's LLM integrations. When paired with the [Voice Satellite Card](https://github.com/jxlarrea/voice-satellite-card-integration), results are displayed directly in the card UI.
+Extend your voice assistant's capabilities with **web, Wikipedia, image, video search, weather forecast, and financial data tools** for Home Assistant's LLM integrations. When paired with the [Voice Satellite](https://github.com/jxlarrea/voice-satellite-card-integration), results are displayed directly in the card UI.
 
 ## Screenshot
 
@@ -31,7 +31,7 @@ Extend your voice assistant's capabilities with **web, Wikipedia, image, video s
 
 ## How It Works
 
-This integration registers **LLM API tools** with Home Assistant. When a conversation agent (OpenAI, Google Generative AI, Anthropic, Ollama, etc.) receives a request, it can call these tools to fetch results. The [Voice Satellite Card](https://github.com/jxlarrea/voice-satellite-card-integration) renders the results visually.
+This integration registers **LLM API tools** with Home Assistant. When a conversation agent (OpenAI, Google Generative AI, Anthropic, Ollama, etc.) receives a request, it can call these tools to fetch results. The [Voice Satellite](https://github.com/jxlarrea/voice-satellite-card-integration) renders the results visually.
 
 **Example voice commands:**
 
@@ -44,7 +44,7 @@ This integration registers **LLM API tools** with Home Assistant. When a convers
 - "How much is Bitcoin right now?"
 - "Convert 100 USD to EUR"
 
-> **Requires the [Voice Satellite Card](https://github.com/jxlarrea/voice-satellite-card-integration).** Without it, the tools still return data to the conversation agent but there will be no visual display.
+> **Requires the [Voice Satellite](https://github.com/jxlarrea/voice-satellite-card-integration).** Without it, the tools still return data to the conversation agent but there will be no visual display.
 
 ## Features
 
@@ -86,7 +86,7 @@ Search results (web, image, video, Wikipedia) are cached in memory (default: 1 h
 
 ## Prerequisites
 
-1. **[Voice Satellite Card](https://github.com/jxlarrea/voice-satellite-card-integration)** installed and configured
+1. **[Voice Satellite](https://github.com/jxlarrea/voice-satellite-card-integration)** installed and configured
 2. A **conversation agent** with LLM tool support (OpenAI, Google Generative AI, Anthropic, Ollama, etc.)
 3. **API credentials** for your chosen providers (Wikipedia and Weather require none)
 
@@ -95,7 +95,7 @@ Search results (web, image, video, Wikipedia) are cached in memory (default: 1 h
 ### HACS (Recommended)
 
 1. Add this repository as a custom repository in HACS (type: Integration)
-2. Search for `Voice Satellite Card LLM Tools` and install
+2. Search for `Voice Satellite LLM Tools` and install
 3. Restart Home Assistant
 
 ### Manual
@@ -106,7 +106,7 @@ Search results (web, image, video, Wikipedia) are cached in memory (default: 1 h
 
 ## Setup
 
-Each tool is configured as a separate entry via **Settings > Devices & Services > Add Integration > Voice Satellite Card LLM Tools**. After adding a tool, enable its LLM API in your **Assist Pipeline** settings.
+Each tool is configured as a separate entry via **Settings > Devices & Services > Add Integration > Voice Satellite LLM Tools**. After adding a tool, enable its LLM API in your **Assist Pipeline** settings.
 
 | Tool | Setup Steps |
 |------|-------------|
@@ -181,7 +181,7 @@ No API key required — uses your existing Home Assistant weather entities. You 
 |---------|----------|
 | Assistant doesn't search | Ensure you're using a conversation agent with LLM tool support (not the built-in HA agent). Verify the LLM APIs are enabled in your Assist pipeline settings. |
 | No results returned | Check API quotas, verify SearXNG is reachable, or try a different query. |
-| Results don't display | Ensure the [Voice Satellite Card](https://github.com/jxlarrea/voice-satellite-card-integration) is installed and up to date. |
+| Results don't display | Ensure the [Voice Satellite](https://github.com/jxlarrea/voice-satellite-card-integration) is installed and up to date. |
 | Weather returns no forecast | Verify your weather entity supports daily forecasts. Check **Developer Tools > States** to confirm the entity has forecast data. |
 | Stock price not found | Ensure you're using the correct ticker symbol (e.g., `AAPL` not `Apple`). For crypto, use the coin symbol (e.g., `BTC`, `ETH`). |
 | Crypto shows wrong price | Some crypto symbols overlap with stock tickers. The tool prioritizes crypto for known symbols (BTC, ETH, etc.) and falls back to stocks otherwise. |

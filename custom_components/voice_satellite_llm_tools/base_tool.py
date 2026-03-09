@@ -1,4 +1,4 @@
-"""Base tool class for Voice Satellite Card LLM Tools."""
+"""Base tool class for Voice Satellite LLM Tools."""
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import llm

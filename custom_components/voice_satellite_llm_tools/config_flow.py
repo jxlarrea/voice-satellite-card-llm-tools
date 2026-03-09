@@ -1,4 +1,4 @@
-"""Config flow for Voice Satellite Card LLM Tools."""
+"""Config flow for Voice Satellite LLM Tools."""
 
 from __future__ import annotations
 
@@ -346,7 +346,7 @@ WEB_PROVIDER_STEP_MAP = {
 
 
 class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Config flow for Voice Satellite Card LLM Tools."""
+    """Config flow for Voice Satellite LLM Tools."""
 
     VERSION = 1
 

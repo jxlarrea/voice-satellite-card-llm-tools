@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Voice Satellite Card LLM Tools",
+        "title": "Voice Satellite LLM Tools",
         "description": "Select which tool to configure.",
         "data": {
           "tool_type": "Tool Type"
