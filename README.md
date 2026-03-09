@@ -1,4 +1,4 @@
-# <img width="48" height="48" alt="icon" src="https://github.com/user-attachments/assets/c852d278-a2e8-491a-9fe9-49f511ece3de" /> Voice Satellite - LLM Tools
+# <img align="top" width="48" height="48" alt="icon" src="https://github.com/user-attachments/assets/02d933af-6b82-475d-9e82-3bc13849d7ac" /> Voice Satellite - LLM Tools
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-blue.svg?style=for-the-badge)](https://www.hacs.xyz/docs/faq/custom_repositories/)
 [![Downloads](https://img.shields.io/github/downloads/jxlarrea/voice-satellite-card-llm-tools/total?style=for-the-badge&label=Downloads&color=red)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases)
