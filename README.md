@@ -1,10 +1,23 @@
-# <img align="top" width="48" height="48" alt="icon" src="https://github.com/user-attachments/assets/02d933af-6b82-475d-9e82-3bc13849d7ac" /> Voice Satellite - LLM Tools
+<h1 align="center" style="border-bottom: none">
+    <div>
+      <picture>
+         <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jxlarrea/voice-satellite-card-llm-tools/refs/heads/main/assets/banner_dark.png">
+         <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jxlarrea/voice-satellite-card-llm-tools/refs/heads/main/assets/banner_light.png">
+         <img alt="Voice Satellite - LLM Tools" src="https://raw.githubusercontent.com/jxlarrea/voice-satellite-card-llm-tools/refs/heads/main/assets/banner_light.png" width="80%" />
+      </picture>
+    </div>
+</h1>
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-blue.svg?style=for-the-badge)](https://www.hacs.xyz/docs/faq/custom_repositories/)
-[![Downloads](https://img.shields.io/github/downloads/jxlarrea/voice-satellite-card-llm-tools/total?style=for-the-badge&label=Downloads&color=red)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases)
-[![version](https://shields.io/github/v/release/jxlarrea/voice-satellite-card-llm-tools?style=for-the-badge&color=orange)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases)
-[![Build](https://img.shields.io/github/actions/workflow/status/jxlarrea/voice-satellite-card-llm-tools/release.yml?style=for-the-badge&label=Build)](https://github.com/jxlarrea/voice-satellite-card-llm-tools/actions/workflows/release.yml)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/jxlarrea)
+<p align="center">
+<a href="https://www.hacs.xyz/docs/faq/custom_repositories/"><img src="https://img.shields.io/badge/HACS-Custom-blue.svg?style=for-the-badge" alt="hacs_badge"></a>
+<a href="https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases"><img src="https://img.shields.io/github/downloads/jxlarrea/voice-satellite-card-llm-tools/total?style=for-the-badge&label=Downloads&color=red" alt="Downloads"></a>
+<a href="https://github.com/jxlarrea/voice-satellite-card-llm-tools/releases"><img src="https://shields.io/github/v/release/jxlarrea/voice-satellite-card-llm-tools?style=for-the-badge&color=orange" alt="version"></a>
+<a href="https://github.com/jxlarrea/voice-satellite-card-llm-tools/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/jxlarrea/voice-satellite-card-llm-tools/release.yml?style=for-the-badge&label=Build" alt="Build"></a>
+</p>
+
+<p align="center">
+<a href="https://buymeacoffee.com/jxlarrea"><img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a>
+</p>
 
 Extend your voice assistant's capabilities with **web, Wikipedia, image, video search, weather forecast, and financial data tools** for Home Assistant's LLM integrations. When paired with the [Voice Satellite](https://github.com/jxlarrea/voice-satellite-card-integration), results are displayed directly in the card UI.
 
