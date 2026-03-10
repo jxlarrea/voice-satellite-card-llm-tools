@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none">
-<img alt="Voice Satellite - LLM Tools" src="https://raw.githubusercontent.com/jxlarrea/voice-satellite-card-llm-tools/refs/heads/main/assets/banner.png" width="80%" />
+<img alt="Voice Satellite - LLM Tools" src="https://raw.githubusercontent.com/jxlarrea/voice-satellite-card-llm-tools/refs/heads/main/assets/banner.png" width="650" />
 </h1>
 
 <p align="center">
