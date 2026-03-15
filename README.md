@@ -113,7 +113,7 @@ Search results (web, image, video, Wikipedia) are cached in memory (default: 1 h
 
 ## Setup
 
-Each tool is configured as a separate entry via **Settings > Devices & Services > Add Integration > Voice Satellite LLM Tools**. After adding a tool, enable its LLM API in your **Assist Pipeline** settings.
+Each tool is configured as a separate entry via **Settings > Devices & Services > Add Integration > Voice Satellite LLM Tools**. After adding a tool, enable its LLM API in your assistant pipeline. Go to **Settings > Voice Assistants**, select your pipeline, and click the gear icon next to **Conversation Agent**. From there, select the newly added tools under **Tool Providers** or **Control Home Assistant** (depending on your conversation integration).
 
 | Tool | Setup Steps |
 |------|-------------|
