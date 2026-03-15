@@ -113,7 +113,7 @@ Search results (web, image, video, Wikipedia) are cached in memory (default: 1 h
 
 ## Setup
 
-Each tool is configured as a separate entry via **Settings > Devices & Services > Add Integration > Voice Satellite LLM Tools**. After adding a tool, enable its LLM API in your **Assist Pipeline** settings.
+Each tool is configured as a separate entry via **Settings > Devices & Services > Add Integration > Voice Satellite LLM Tools**. After adding a tool, enable its LLM API in your **Assist Pipeline** settings. For the Ollama and OpenAI Conversation integrations, this can be found within your Conversation Agent configuration options. Click the Control Home Assistant heading and select the tools to enable.
 
 | Tool | Setup Steps |
 |------|-------------|
