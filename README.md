@@ -101,7 +101,7 @@ Search results (web, image, video, Wikipedia) are cached in memory (default: 1 h
 
 ### HACS (Recommended)
 
-Voice Satellite is available in [HACS](https://hacs.xyz/). Use the link below to open the HACS repository in Home Assistant.
+Voice Satellite LLM Tools is available in [HACS](https://hacs.xyz/). Use the link below to open the HACS repository in Home Assistant.
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jxlarrea&repository=voice-satellite-card-llm-tools)
 
