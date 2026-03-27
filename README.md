@@ -101,9 +101,11 @@ Search results (web, image, video, Wikipedia) are cached in memory (default: 1 h
 
 ### HACS (Recommended)
 
-1. Add this repository as a custom repository in HACS (type: Integration)
-2. Search for `Voice Satellite LLM Tools` and install
-3. Restart Home Assistant
+Voice Satellite is available in [HACS](https://hacs.xyz/). Use the link below to open the HACS repository in Home Assistant.
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jxlarrea&repository=voice-satellite-card-llm-tools)
+
+Or search for `Voice Satellite LLM Tools` in the HACS default repository.
 
 ### Manual
 
