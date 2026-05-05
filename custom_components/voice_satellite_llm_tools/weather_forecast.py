@@ -7,6 +7,7 @@ import voluptuous as vol
 from homeassistant.components.weather import WeatherEntityFeature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import llm
+from homeassistant.util import dt as dt_util
 
 from .base_tool import BaseTool
 from .const import (
@@ -116,7 +117,7 @@ class WeatherForecastTool(BaseTool):
             return {"error": "No daily weather entity configured."}
 
         try:
-            today = datetime.now().date()
+            today = dt_util.now().date()
             target_date = self._resolve_target_date(range_value, today)
 
             use_hourly = (
@@ -237,8 +238,23 @@ class WeatherForecastTool(BaseTool):
         return result.get(entity_id, {}).get("forecast", [])
 
     @staticmethod
+    def _parse_local(dt_str: str) -> datetime | None:
+        """Parse an ISO 8601 datetime string and convert to HA local time.
+
+        Forecast entries from weather.get_forecasts arrive in UTC (ISO 8601 with
+        offset). Naive strings are treated as UTC per HA convention.
+        """
+        try:
+            dt = datetime.fromisoformat(dt_str)
+        except (ValueError, TypeError):
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=dt_util.UTC)
+        return dt_util.as_local(dt)
+
+    @staticmethod
     def _filter_by_date(forecast_data: list[dict], target_date) -> list[dict]:
-        """Filter forecast entries to those matching the target date."""
+        """Filter forecast entries to those matching the target date (local TZ)."""
         if target_date is None:
             return forecast_data
         filtered = []
@@ -246,11 +262,9 @@ class WeatherForecastTool(BaseTool):
             dt_str = entry.get("datetime", "")
             if not dt_str:
                 continue
-            try:
-                if datetime.fromisoformat(dt_str).date() == target_date:
-                    filtered.append(entry)
-            except (ValueError, TypeError):
-                continue
+            local_dt = WeatherForecastTool._parse_local(dt_str)
+            if local_dt is not None and local_dt.date() == target_date:
+                filtered.append(entry)
         return filtered
 
     @staticmethod
@@ -303,14 +317,13 @@ class WeatherForecastTool(BaseTool):
 
             dt_str = entry.get("datetime", "")
             if dt_str:
-                try:
-                    dt = datetime.fromisoformat(dt_str)
-                    if forecast_type == "hourly":
-                        item["time"] = dt.strftime("%-I%p").lower()
-                    else:
-                        item["date"] = dt.strftime("%A")
-                except (ValueError, TypeError):
+                local_dt = self._parse_local(dt_str)
+                if local_dt is None:
                     item["datetime"] = dt_str
+                elif forecast_type == "hourly":
+                    item["time"] = local_dt.strftime("%-I%p").lower()
+                else:
+                    item["date"] = local_dt.strftime("%A")
 
             item["condition"] = entry.get("condition", "")
 
