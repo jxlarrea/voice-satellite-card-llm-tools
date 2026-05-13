@@ -13,6 +13,11 @@ TOOL_TYPE_WIKIPEDIA = "wikipedia"
 TOOL_TYPE_WEATHER = "weather"
 TOOL_TYPE_FINANCIAL = "financial_data"
 
+TOOL_TYPE_NEWS = "news"
+TOOL_TYPE_CALENDAR = "calendar"
+TOOL_TYPE_TODO = "todo"
+TOOL_TYPE_SPORTS = "sports"
+
 CONF_TOOL_TYPES = {
     TOOL_TYPE_IMAGE_SEARCH: "Image Search",
     TOOL_TYPE_VIDEO_SEARCH: "Video Search",
@@ -20,6 +25,10 @@ CONF_TOOL_TYPES = {
     TOOL_TYPE_WIKIPEDIA: "Wikipedia",
     TOOL_TYPE_WEATHER: "Weather Forecast",
     TOOL_TYPE_FINANCIAL: "Financial Data",
+    TOOL_TYPE_NEWS: "News Headlines",
+    TOOL_TYPE_CALENDAR: "Calendar Events",
+    TOOL_TYPE_TODO: "To-do Lists",
+    TOOL_TYPE_SPORTS: "Sports Scores",
 }
 
 # LLM API identifiers
@@ -198,4 +207,80 @@ WIKIPEDIA_DEFAULTS = {
 VIDEO_SEARCH_DEFAULTS = {
     CONF_YOUTUBE_API_KEY: "",
     CONF_YOUTUBE_NUM_RESULTS: 3,
+}
+
+# News Headlines LLM API identifiers
+NEWS_API_NAME = "Voice Satellite: News Headlines"
+NEWS_API_ID = "voice_satellite_llm_tools_news"
+
+NEWS_SERVICES_PROMPT = (
+    "You may use the News Headlines tool to get current news. "
+    "When the user asks about news, current events, or what's happening in the world, "
+    "use the get_news_headlines tool. "
+    "You can optionally filter by topic (query) or category."
+)
+
+CONF_NEWSAPI_KEY = "newsapi_key"
+CONF_NEWS_NUM_RESULTS = "news_num_results"
+CONF_NEWS_COUNTRY = "news_country"
+
+NEWS_DEFAULTS = {
+    CONF_NEWSAPI_KEY: "",
+    CONF_NEWS_NUM_RESULTS: 5,
+    CONF_NEWS_COUNTRY: "us",
+}
+
+# Calendar Events LLM API identifiers
+CALENDAR_API_NAME = "Voice Satellite: Calendar Events"
+CALENDAR_API_ID = "voice_satellite_llm_tools_calendar"
+
+CALENDAR_SERVICES_PROMPT = (
+    "You may use the Calendar Events tool to get events from Home Assistant calendars. "
+    "When the user asks what's on their calendar, schedule, or agenda, "
+    "use the get_calendar_events tool with the appropriate range."
+)
+
+CONF_CALENDAR_ENTITIES = "calendar_entities"
+
+# To-do Lists LLM API identifiers
+TODO_API_NAME = "Voice Satellite: To-do Lists"
+TODO_API_ID = "voice_satellite_llm_tools_todo"
+
+TODO_SERVICES_PROMPT = (
+    "You may use the To-do Lists tool to read items from Home Assistant to-do or shopping lists. "
+    "When the user asks what's on their shopping list, to-do list, or wants to check their tasks, "
+    "use the get_todo_items tool."
+)
+
+CONF_TODO_ENTITIES = "todo_entities"
+
+# Sports Scores LLM API identifiers
+SPORTS_API_NAME = "Voice Satellite: Sports Scores"
+SPORTS_API_ID = "voice_satellite_llm_tools_sports"
+
+SPORTS_SERVICES_PROMPT = (
+    "You may use the Sports Scores tool to get today's sports results and scores. "
+    "When the user asks about match scores, results, or who won a game, "
+    "use the get_sports_scores tool with the appropriate league_id."
+)
+
+CONF_SPORTS_LEAGUES = "sports_leagues"
+
+# Maps league_id -> (display_name, ESPN API path)
+SPORTS_LEAGUES: dict[str, tuple[str, str]] = {
+    "premier_league": ("Premier League", "soccer/eng.1"),
+    "la_liga": ("La Liga", "soccer/esp.1"),
+    "serie_a": ("Serie A", "soccer/ita.1"),
+    "bundesliga": ("Bundesliga", "soccer/ger.1"),
+    "ligue_1": ("Ligue 1", "soccer/fra.1"),
+    "champions_league": ("UEFA Champions League", "soccer/uefa.champions"),
+    "mls": ("MLS", "soccer/usa.1"),
+    "nba": ("NBA", "basketball/nba"),
+    "nfl": ("NFL", "football/nfl"),
+    "mlb": ("MLB", "baseball/mlb"),
+    "nhl": ("NHL", "hockey/nhl"),
+}
+
+SPORTS_DEFAULTS = {
+    CONF_SPORTS_LEAGUES: list(SPORTS_LEAGUES.keys()),
 }

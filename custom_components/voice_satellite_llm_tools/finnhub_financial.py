@@ -2,10 +2,9 @@
 
 import logging
 
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-
 from .base_financial import BaseFinancialTool
 from .const import CONF_FINNHUB_API_KEY
+from .http_helpers import fetch_json
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,6 +42,9 @@ CRYPTO_COINGECKO_IDS = {
     "PEPE": "pepe",
     "SUI": "sui",
     "SEI": "sei-network",
+    "TON": "the-open-network",
+    "WIF": "dogwifcoin",
+    "BONK": "bonk",
 }
 
 
@@ -65,28 +67,16 @@ class FinnhubFinancialTool(BaseFinancialTool):
         if not api_key:
             raise RuntimeError("Finnhub API key not configured")
 
-        # Check if this looks like a crypto symbol — try CoinGecko first
         base = self._get_crypto_base(symbol)
         if base in CRYPTO_COINGECKO_IDS:
             crypto = await self._try_crypto_quote(base)
             if crypto:
                 return crypto
 
-        session = async_get_clientsession(self.hass)
         params = {"symbol": symbol, "token": api_key}
-
-        async with session.get(
-            f"{FINNHUB_BASE_URL}/quote", params=params
-        ) as resp:
-            if resp.status != 200:
-                error_text = await resp.text()
-                raise RuntimeError(
-                    f"Finnhub quote returned HTTP {resp.status}: {error_text}"
-                )
-            quote = await resp.json()
+        quote = await fetch_json(self.hass, f"{FINNHUB_BASE_URL}/quote", params=params)
 
         if quote.get("c") is None or quote.get("c") == 0:
-            # Stock not found — try crypto as last resort
             crypto = await self._try_crypto_quote(base)
             if crypto:
                 return crypto
@@ -95,14 +85,11 @@ class FinnhubFinancialTool(BaseFinancialTool):
                 "Check that the ticker is valid."
             )
 
-        # Fetch company profile for name, exchange, logo
         profile = {}
         try:
-            async with session.get(
-                f"{FINNHUB_BASE_URL}/stock/profile2", params=params
-            ) as resp:
-                if resp.status == 200:
-                    profile = await resp.json()
+            profile = await fetch_json(
+                self.hass, f"{FINNHUB_BASE_URL}/stock/profile2", params=params
+            )
         except Exception:
             _LOGGER.debug("Could not fetch company profile for %s", symbol)
 
@@ -127,25 +114,16 @@ class FinnhubFinancialTool(BaseFinancialTool):
         if not coingecko_id:
             return None
 
-        session = async_get_clientsession(self.hass)
-
         try:
-            async with session.get(
+            data = await fetch_json(
+                self.hass,
                 f"{COINGECKO_BASE_URL}/coins/markets",
                 params={
                     "vs_currency": "usd",
                     "ids": coingecko_id,
                     "price_change_percentage": "24h",
                 },
-            ) as resp:
-                if resp.status != 200:
-                    _LOGGER.debug(
-                        "CoinGecko returned HTTP %s for %s",
-                        resp.status,
-                        coingecko_id,
-                    )
-                    return None
-                data = await resp.json()
+            )
         except Exception:
             _LOGGER.debug("CoinGecko lookup failed for %s", coingecko_id)
             return None
@@ -155,9 +133,7 @@ class FinnhubFinancialTool(BaseFinancialTool):
 
         coin = data[0]
         _LOGGER.info(
-            "Crypto quote resolved via CoinGecko: %s → %s",
-            base_symbol,
-            coingecko_id,
+            "Crypto quote resolved via CoinGecko: %s → %s", base_symbol, coingecko_id
         )
 
         return {
@@ -176,26 +152,17 @@ class FinnhubFinancialTool(BaseFinancialTool):
             "logo_url": coin.get("image", ""),
         }
 
-    async def async_get_currency_rate(
-        self, from_currency: str, to_currency: str
-    ) -> float:
+    async def async_get_currency_rate(self, from_currency: str, to_currency: str) -> float:
         """Get exchange rate from Finnhub."""
         api_key = self.config.get(CONF_FINNHUB_API_KEY, "")
         if not api_key:
             raise RuntimeError("Finnhub API key not configured")
 
-        session = async_get_clientsession(self.hass)
-
-        async with session.get(
+        data = await fetch_json(
+            self.hass,
             f"{FINNHUB_BASE_URL}/forex/rates",
             params={"base": from_currency, "token": api_key},
-        ) as resp:
-            if resp.status != 200:
-                error_text = await resp.text()
-                raise RuntimeError(
-                    f"Finnhub forex returned HTTP {resp.status}: {error_text}"
-                )
-            data = await resp.json()
+        )
 
         rates = data.get("quote", {})
         if to_currency not in rates:

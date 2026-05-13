@@ -8,7 +8,6 @@ import time
 import voluptuous as vol
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import llm
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .base_tool import BaseTool
 from .const import (
@@ -18,6 +17,7 @@ from .const import (
     DEFAULT_CACHE_TTL,
     DOMAIN,
 )
+from .http_helpers import fetch_json
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -55,7 +55,6 @@ class YouTubeVideoSearchTool(BaseTool):
     )
 
     def _get_num_results(self, tool_input: llm.ToolInput) -> int:
-        """Resolve number of results, capped at the configured maximum."""
         configured_max = min(int(self.config.get(CONF_YOUTUBE_NUM_RESULTS, 3)), 6)
         explicit = tool_input.tool_args.get("num_results")
         if explicit is not None:
@@ -63,7 +62,6 @@ class YouTubeVideoSearchTool(BaseTool):
         return configured_max
 
     def _make_cache_key(self, query: str, num_results: int) -> str:
-        """Build a cache key from query + result count."""
         raw = json.dumps(
             {"type": "video", "q": query.lower().strip(), "n": num_results},
             sort_keys=True,
@@ -71,7 +69,6 @@ class YouTubeVideoSearchTool(BaseTool):
         return hashlib.md5(raw.encode()).hexdigest()
 
     def _cache_get(self, key: str) -> list[dict] | None:
-        """Retrieve from in-memory cache if not expired."""
         cache = self.hass.data.get(DOMAIN, {}).get("cache", {})
         entry = cache.get(key)
         if entry is None:
@@ -84,7 +81,6 @@ class YouTubeVideoSearchTool(BaseTool):
         return entry["data"]
 
     def _cache_set(self, key: str, data: list[dict]) -> None:
-        """Store in in-memory cache."""
         cache = self.hass.data.setdefault(DOMAIN, {}).setdefault("cache", {})
         cache[key] = {"ts": time.time(), "data": data}
 
@@ -94,7 +90,6 @@ class YouTubeVideoSearchTool(BaseTool):
         tool_input: llm.ToolInput,
         llm_context: llm.LLMContext,
     ) -> dict:
-        """Execute the video search tool."""
         query = tool_input.tool_args["query"]
         num_results = self._get_num_results(tool_input)
         auto_play = tool_input.tool_args.get("auto_play", False)
@@ -131,29 +126,21 @@ class YouTubeVideoSearchTool(BaseTool):
             return {"error": f"Video search failed: {e!s}"}
 
     async def _search_videos(self, query: str, num_results: int) -> list[dict]:
-        """Search YouTube and return video results with metadata."""
         api_key = self.config.get(CONF_YOUTUBE_API_KEY, "")
         if not api_key:
             raise RuntimeError("YouTube API key not configured")
 
-        session = async_get_clientsession(self.hass)
-
-        # Step 1: Search for videos
-        search_params = {
-            "part": "snippet",
-            "q": query,
-            "type": "video",
-            "maxResults": num_results,
-            "key": api_key,
-        }
-
-        async with session.get(YOUTUBE_SEARCH_URL, params=search_params) as resp:
-            if resp.status != 200:
-                error_text = await resp.text()
-                raise RuntimeError(
-                    f"YouTube Search API returned HTTP {resp.status}: {error_text}"
-                )
-            search_data = await resp.json()
+        search_data = await fetch_json(
+            self.hass,
+            YOUTUBE_SEARCH_URL,
+            params={
+                "part": "snippet",
+                "q": query,
+                "type": "video",
+                "maxResults": num_results,
+                "key": api_key,
+            },
+        )
 
         items = search_data.get("items", [])
         if not items:
@@ -161,25 +148,20 @@ class YouTubeVideoSearchTool(BaseTool):
 
         video_ids = [item["id"]["videoId"] for item in items]
 
-        # Step 2: Get video details (duration, view count, etc.)
-        details_params = {
-            "part": "contentDetails,statistics",
-            "id": ",".join(video_ids),
-            "key": api_key,
-        }
-
-        async with session.get(YOUTUBE_VIDEOS_URL, params=details_params) as resp:
-            if resp.status != 200:
-                error_text = await resp.text()
-                _LOGGER.warning(
-                    "YouTube Videos API returned HTTP %d: %s", resp.status, error_text
-                )
-                details_map = {}
-            else:
-                details_data = await resp.json()
-                details_map = {
-                    item["id"]: item for item in details_data.get("items", [])
-                }
+        try:
+            details_data = await fetch_json(
+                self.hass,
+                YOUTUBE_VIDEOS_URL,
+                params={
+                    "part": "contentDetails,statistics",
+                    "id": ",".join(video_ids),
+                    "key": api_key,
+                },
+            )
+            details_map = {item["id"]: item for item in details_data.get("items", [])}
+        except Exception as exc:
+            _LOGGER.warning("YouTube Videos API details fetch failed: %s", exc)
+            details_map = {}
 
         results = []
         for item in items:
@@ -211,10 +193,7 @@ class YouTubeVideoSearchTool(BaseTool):
 
         return results
 
-    def _format_response(
-        self, results: list[dict], query: str, auto_play: bool
-    ) -> dict:
-        """Format the search results into the LLM response structure."""
+    def _format_response(self, results: list[dict], query: str, auto_play: bool) -> dict:
         return {
             "source": self.source,
             "query": query,
