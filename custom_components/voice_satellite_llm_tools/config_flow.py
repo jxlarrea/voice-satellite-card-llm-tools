@@ -28,24 +28,30 @@ from .const import (
     CONF_BRAVE_IMAGE_NUM_RESULTS,
     CONF_BRAVE_SAFESEARCH,
     CONF_BRAVE_WEB_NUM_RESULTS,
+    CONF_CALENDAR_ENTITIES,
     CONF_DAILY_WEATHER_ENTITY,
     CONF_FINANCIAL_PROVIDER,
     CONF_FINANCIAL_PROVIDER_FINNHUB,
     CONF_FINANCIAL_PROVIDERS,
     CONF_FINNHUB_API_KEY,
     CONF_HOURLY_WEATHER_ENTITY,
-    CONF_WEATHER_HUMIDITY_SENSOR,
     CONF_IMAGE_SEARCH_PROVIDER,
     CONF_IMAGE_SEARCH_PROVIDER_BRAVE,
     CONF_IMAGE_SEARCH_PROVIDER_SEARXNG,
     CONF_IMAGE_SEARCH_PROVIDERS,
+    CONF_NEWS_COUNTRY,
+    CONF_NEWS_NUM_RESULTS,
+    CONF_NEWSAPI_KEY,
     CONF_SEARXNG_ENGINES,
     CONF_SEARXNG_IMAGE_NUM_RESULTS,
     CONF_SEARXNG_URL,
     CONF_SEARXNG_WEB_ENGINES,
     CONF_SEARXNG_WEB_NUM_RESULTS,
+    CONF_SPORTS_LEAGUES,
+    CONF_TODO_ENTITIES,
     CONF_TOOL_TYPE,
     CONF_TOOL_TYPES,
+    CONF_WEATHER_HUMIDITY_SENSOR,
     CONF_WEATHER_TEMPERATURE_SENSOR,
     CONF_WEB_SEARCH_PROVIDER,
     CONF_WEB_SEARCH_PROVIDER_BRAVE,
@@ -58,8 +64,15 @@ from .const import (
     DOMAIN,
     FINANCIAL_DEFAULTS,
     IMAGE_SEARCH_DEFAULTS,
+    NEWS_DEFAULTS,
+    SPORTS_DEFAULTS,
+    SPORTS_LEAGUES,
+    TOOL_TYPE_CALENDAR,
     TOOL_TYPE_FINANCIAL,
     TOOL_TYPE_IMAGE_SEARCH,
+    TOOL_TYPE_NEWS,
+    TOOL_TYPE_SPORTS,
+    TOOL_TYPE_TODO,
     TOOL_TYPE_VIDEO_SEARCH,
     TOOL_TYPE_WEATHER,
     TOOL_TYPE_WEB_SEARCH,
@@ -85,6 +98,10 @@ STEP_WIKIPEDIA = "wikipedia"
 STEP_WEATHER = "weather"
 STEP_FINANCIAL_PROVIDER = "financial_provider"
 STEP_FINNHUB_FINANCIAL = "finnhub_financial"
+STEP_NEWS = "news"
+STEP_CALENDAR = "calendar"
+STEP_TODO = "todo"
+STEP_SPORTS = "sports"
 
 SAFESEARCH_OPTIONS = {
     "off": "Off",
@@ -326,6 +343,71 @@ def get_finnhub_financial_schema(defaults: dict | None = None) -> vol.Schema:
     )
 
 
+def get_news_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for News Headlines configuration."""
+    d = defaults or NEWS_DEFAULTS
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_NEWSAPI_KEY,
+                default=d.get(CONF_NEWSAPI_KEY, ""),
+            ): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
+            vol.Required(
+                CONF_NEWS_COUNTRY,
+                default=d.get(CONF_NEWS_COUNTRY, "us"),
+            ): TextSelector(TextSelectorConfig(type=TextSelectorType.TEXT)),
+            vol.Required(
+                CONF_NEWS_NUM_RESULTS,
+                default=d.get(CONF_NEWS_NUM_RESULTS, 5),
+            ): _num_results_selector(unit="headlines", max_val=10),
+        }
+    )
+
+
+def get_calendar_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for Calendar Events configuration."""
+    return vol.Schema(
+        {
+            vol.Required(CONF_CALENDAR_ENTITIES): EntitySelector(
+                EntitySelectorConfig(domain="calendar", multiple=True)
+            ),
+        }
+    )
+
+
+def get_todo_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for To-do Lists configuration."""
+    return vol.Schema(
+        {
+            vol.Required(CONF_TODO_ENTITIES): EntitySelector(
+                EntitySelectorConfig(domain="todo", multiple=True)
+            ),
+        }
+    )
+
+
+def get_sports_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for Sports Scores configuration."""
+    d = defaults or SPORTS_DEFAULTS
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_SPORTS_LEAGUES,
+                default=d.get(CONF_SPORTS_LEAGUES, list(SPORTS_LEAGUES.keys())),
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    mode=SelectSelectorMode.LIST,
+                    multiple=True,
+                    options=[
+                        SelectOptionDict(value=lid, label=name)
+                        for lid, (name, _) in SPORTS_LEAGUES.items()
+                    ],
+                )
+            ),
+        }
+    )
+
+
 # Map provider to (step_id, schema_func)
 FINANCIAL_PROVIDER_STEP_MAP = {
     CONF_FINANCIAL_PROVIDER_FINNHUB: (
@@ -420,6 +502,38 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
             return self.async_show_form(
                 step_id=STEP_FINANCIAL_PROVIDER,
                 data_schema=get_financial_provider_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_NEWS:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_NEWS):
+                return self.async_abort(reason="news_already_configured")
+            return self.async_show_form(
+                step_id=STEP_NEWS,
+                data_schema=get_news_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_CALENDAR:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_CALENDAR):
+                return self.async_abort(reason="calendar_already_configured")
+            return self.async_show_form(
+                step_id=STEP_CALENDAR,
+                data_schema=get_calendar_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_TODO:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_TODO):
+                return self.async_abort(reason="todo_already_configured")
+            return self.async_show_form(
+                step_id=STEP_TODO,
+                data_schema=get_todo_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_SPORTS:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_SPORTS):
+                return self.async_abort(reason="sports_already_configured")
+            return self.async_show_form(
+                step_id=STEP_SPORTS,
+                data_schema=get_sports_schema(),
             )
 
         return self.async_abort(reason="unknown_tool_type")
@@ -622,6 +736,66 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
         self._abort_if_unique_id_configured()
         return self.async_create_entry(title=title, data=self.config_data)
 
+    async def async_step_news(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure News Headlines settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_NEWS,
+                data_schema=get_news_schema(),
+            )
+
+        self.config_data.update(user_input)
+        await self.async_set_unique_id(f"{DOMAIN}_news")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(title="News Headlines", data=self.config_data)
+
+    async def async_step_calendar(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure Calendar Events settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_CALENDAR,
+                data_schema=get_calendar_schema(),
+            )
+
+        self.config_data.update(user_input)
+        await self.async_set_unique_id(f"{DOMAIN}_calendar")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(title="Calendar Events", data=self.config_data)
+
+    async def async_step_todo(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure To-do Lists settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_TODO,
+                data_schema=get_todo_schema(),
+            )
+
+        self.config_data.update(user_input)
+        await self.async_set_unique_id(f"{DOMAIN}_todo")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(title="To-do Lists", data=self.config_data)
+
+    async def async_step_sports(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure Sports Scores settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_SPORTS,
+                data_schema=get_sports_schema(),
+            )
+
+        self.config_data.update(user_input)
+        await self.async_set_unique_id(f"{DOMAIN}_sports")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(title="Sports Scores", data=self.config_data)
+
     @staticmethod
     @callback
     def async_get_options_flow(
@@ -664,6 +838,18 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
 
         if tool_type == TOOL_TYPE_FINANCIAL:
             return await self.async_step_financial_provider(user_input)
+
+        if tool_type == TOOL_TYPE_NEWS:
+            return await self.async_step_news(user_input)
+
+        if tool_type == TOOL_TYPE_CALENDAR:
+            return await self.async_step_calendar(user_input)
+
+        if tool_type == TOOL_TYPE_TODO:
+            return await self.async_step_todo(user_input)
+
+        if tool_type == TOOL_TYPE_SPORTS:
+            return await self.async_step_sports(user_input)
 
         return self.async_abort(reason="unknown_tool_type")
 
@@ -850,5 +1036,53 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
         self.hass.config_entries.async_update_entry(
             self.config_entry, title=title
         )
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_news(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: News Headlines settings."""
+        if user_input is None:
+            schema = get_news_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_NEWS, data_schema=schema)
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_calendar(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: Calendar Events settings."""
+        if user_input is None:
+            schema = get_calendar_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_CALENDAR, data_schema=schema)
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_todo(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: To-do Lists settings."""
+        if user_input is None:
+            schema = get_todo_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_TODO, data_schema=schema)
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)
+
+    async def async_step_sports(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: Sports Scores settings."""
+        if user_input is None:
+            schema = get_sports_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_SPORTS, data_schema=schema)
+
+        self.config_data.update(user_input)
         return self.async_create_entry(data=self.config_data)
 

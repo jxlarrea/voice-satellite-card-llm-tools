@@ -118,6 +118,49 @@
         "data_description": {
           "finnhub_api_key": "Get your free API key from finnhub.io. Supports stock quotes and currency exchange rates."
         }
+      },
+      "news": {
+        "title": "Configure News Headlines",
+        "description": "Enter your NewsAPI key to get current news headlines. Get a free key at newsapi.org.",
+        "data": {
+          "newsapi_key": "NewsAPI Key",
+          "news_country": "Country Code",
+          "news_num_results": "Maximum Number of Headlines"
+        },
+        "data_description": {
+          "newsapi_key": "Get your free API key from newsapi.org.",
+          "news_country": "Two-letter country code for headlines, e.g. us, gb, de, fr, it."
+        }
+      },
+      "calendar": {
+        "title": "Configure Calendar Events",
+        "description": "Select which Home Assistant calendar entities to expose. No API key required.",
+        "data": {
+          "calendar_entities": "Calendar Entities"
+        },
+        "data_description": {
+          "calendar_entities": "Select one or more calendar entities. The assistant can query these for upcoming events."
+        }
+      },
+      "todo": {
+        "title": "Configure To-do Lists",
+        "description": "Select which Home Assistant to-do or shopping list entities to expose. No API key required.",
+        "data": {
+          "todo_entities": "To-do List Entities"
+        },
+        "data_description": {
+          "todo_entities": "Select one or more to-do or shopping list entities."
+        }
+      },
+      "sports": {
+        "title": "Configure Sports Scores",
+        "description": "Select which leagues to make available. No API key required — uses the ESPN scoreboard.",
+        "data": {
+          "sports_leagues": "Available Leagues"
+        },
+        "data_description": {
+          "sports_leagues": "Select the leagues you want the assistant to be able to look up."
+        }
       }
     },
     "abort": {
@@ -127,6 +170,10 @@
       "wikipedia_already_configured": "Wikipedia Search is already configured. Use the existing entry's options to change settings.",
       "weather_already_configured": "Weather Forecast is already configured. Use the existing entry's options to change settings.",
       "financial_already_configured": "Financial Data is already configured. Use the existing entry's options to change settings.",
+      "news_already_configured": "News Headlines is already configured. Use the existing entry's options to change settings.",
+      "calendar_already_configured": "Calendar Events is already configured. Use the existing entry's options to change settings.",
+      "todo_already_configured": "To-do Lists is already configured. Use the existing entry's options to change settings.",
+      "sports_already_configured": "Sports Scores is already configured. Use the existing entry's options to change settings.",
       "unknown_tool_type": "Unknown tool type selected.",
       "unknown_provider": "Unknown search provider selected."
     }
@@ -240,6 +287,39 @@
         },
         "data_description": {
           "finnhub_api_key": "Get your free API key from finnhub.io. Supports stock quotes and currency exchange rates."
+        }
+      },
+      "news": {
+        "title": "News Headlines Options",
+        "description": "Update your NewsAPI settings.",
+        "data": {
+          "newsapi_key": "NewsAPI Key",
+          "news_country": "Country Code",
+          "news_num_results": "Maximum Number of Headlines"
+        },
+        "data_description": {
+          "news_country": "Two-letter country code for headlines, e.g. us, gb, de, fr, it."
+        }
+      },
+      "calendar": {
+        "title": "Calendar Events Options",
+        "description": "Update which calendar entities to expose.",
+        "data": {
+          "calendar_entities": "Calendar Entities"
+        }
+      },
+      "todo": {
+        "title": "To-do Lists Options",
+        "description": "Update which to-do or shopping list entities to expose.",
+        "data": {
+          "todo_entities": "To-do List Entities"
+        }
+      },
+      "sports": {
+        "title": "Sports Scores Options",
+        "description": "Update which leagues to make available.",
+        "data": {
+          "sports_leagues": "Available Leagues"
         }
       }
     }

@@ -2,14 +2,9 @@
 
 import logging
 
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-
 from .base_image_search import BaseImageSearchTool
-from .const import (
-    CONF_BRAVE_API_KEY,
-    CONF_BRAVE_IMAGE_NUM_RESULTS,
-    CONF_BRAVE_SAFESEARCH,
-)
+from .const import CONF_BRAVE_API_KEY, CONF_BRAVE_IMAGE_NUM_RESULTS, CONF_BRAVE_SAFESEARCH
+from .http_helpers import fetch_json
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,49 +21,39 @@ class BraveImageSearchTool(BaseImageSearchTool):
 
     async def async_search_images(self, query: str, num_results: int) -> list[dict]:
         api_key = self.config.get(CONF_BRAVE_API_KEY, "")
-
         if not api_key:
             raise RuntimeError("Brave API key not configured")
 
         safesearch = self.config.get(CONF_BRAVE_SAFESEARCH, "moderate")
-        session = async_get_clientsession(self.hass)
 
-        headers = {
-            "Accept": "application/json",
-            "X-Subscription-Token": api_key,
-        }
+        data = await fetch_json(
+            self.hass,
+            BRAVE_IMAGE_ENDPOINT,
+            headers={
+                "Accept": "application/json",
+                "X-Subscription-Token": api_key,
+            },
+            params={
+                "q": query,
+                "count": num_results,
+                "safesearch": safesearch,
+            },
+        )
 
-        params = {
-            "q": query,
-            "count": num_results,
-            "safesearch": safesearch,
-        }
+        results = []
+        for item in data.get("results", []):
+            properties = item.get("properties", {})
+            thumbnail = item.get("thumbnail", {})
+            results.append(
+                {
+                    "image_url": properties.get("url", ""),
+                    "title": item.get("title", ""),
+                    "thumbnail_url": thumbnail.get("src", ""),
+                    "source_url": item.get("url", ""),
+                    "source": item.get("source", ""),
+                    "width": properties.get("width"),
+                    "height": properties.get("height"),
+                }
+            )
 
-        async with session.get(
-            BRAVE_IMAGE_ENDPOINT, headers=headers, params=params
-        ) as resp:
-            if resp.status != 200:
-                error_text = await resp.text()
-                raise RuntimeError(
-                    f"Brave Image Search returned HTTP {resp.status}: {error_text}"
-                )
-
-            data = await resp.json()
-            results = []
-
-            for item in data.get("results", []):
-                properties = item.get("properties", {})
-                thumbnail = item.get("thumbnail", {})
-                results.append(
-                    {
-                        "image_url": properties.get("url", ""),
-                        "title": item.get("title", ""),
-                        "thumbnail_url": thumbnail.get("src", ""),
-                        "source_url": item.get("url", ""),
-                        "source": item.get("source", ""),
-                        "width": properties.get("width"),
-                        "height": properties.get("height"),
-                    }
-                )
-
-            return results
+        return results
