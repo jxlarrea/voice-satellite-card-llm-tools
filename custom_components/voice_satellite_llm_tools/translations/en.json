@@ -118,6 +118,18 @@
         "data_description": {
           "finnhub_api_key": "Get your free API key from finnhub.io. Supports stock quotes and currency exchange rates."
         }
+      },
+      "entity_card": {
+        "title": "Configure Entity Card",
+        "description": "Show Home Assistant entities on the satellite screen. No API key required.",
+        "data": {
+          "entity_card_max_entities": "Maximum Entities Per Card",
+          "entity_card_history_hours": "History Range"
+        },
+        "data_description": {
+          "entity_card_max_entities": "How many entities a single card may show. Extra entities in a request are dropped.",
+          "entity_card_history_hours": "How far back the graph goes when the assistant is asked for history or a trend."
+        }
       }
     },
     "abort": {
@@ -128,7 +140,8 @@
       "weather_already_configured": "Weather Forecast is already configured. Use the existing entry's options to change settings.",
       "financial_already_configured": "Financial Data is already configured. Use the existing entry's options to change settings.",
       "unknown_tool_type": "Unknown tool type selected.",
-      "unknown_provider": "Unknown search provider selected."
+      "unknown_provider": "Unknown search provider selected.",
+      "entity_card_already_configured": "Entity Card is already configured. Use the existing entry's options to change settings."
     }
   },
   "options": {
@@ -240,6 +253,18 @@
         },
         "data_description": {
           "finnhub_api_key": "Get your free API key from finnhub.io. Supports stock quotes and currency exchange rates."
+        }
+      },
+      "entity_card": {
+        "title": "Entity Card Options",
+        "description": "Update how entities are drawn on the satellite screen.",
+        "data": {
+          "entity_card_max_entities": "Maximum Entities Per Card",
+          "entity_card_history_hours": "History Range"
+        },
+        "data_description": {
+          "entity_card_max_entities": "How many entities a single card may show. Extra entities in a request are dropped.",
+          "entity_card_history_hours": "How far back the graph goes when the assistant is asked for history or a trend."
         }
       }
     }

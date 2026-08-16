@@ -29,6 +29,7 @@ Extend your voice assistant's capabilities with **web, Wikipedia, image, video s
   - [Video Search](#video-search)
   - [Weather Forecast](#weather-forecast)
   - [Financial Data](#financial-data)
+  - [Entity Card](#entity-card)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Setup](#setup)
@@ -83,6 +84,17 @@ Get weather forecasts using your existing Home Assistant weather entities — no
 
 Look up stock prices, cryptocurrency prices, and convert currencies using [Finnhub](https://finnhub.io/) (free tier available). Stocks return current price, daily change, high/low, and company logo. Cryptocurrency queries (BTC, ETH, DOGE, and 25+ others) are automatically resolved via [CoinGecko](https://www.coingecko.com/) for accurate pricing. Currency conversion supports all major forex pairs.
 
+### Entity Card
+
+Show Home Assistant entities on the satellite screen. Ask to see a camera, a light, or a group of sensors and the assistant draws them as a real Lovelace card in the media panel while it answers out loud. No API key required, and no dashboard editing: the card is built from the entities themselves.
+
+- Cameras render as a live picture card, one or in a grid
+- A single entity renders as a tile
+- Several entities render as an entities list
+- Asking about a trend or history renders a history graph
+
+Only entities exposed to your assistant can be drawn. The card is not interactive, since the satellite is a hands-free surface, and it needs Voice Satellite 2026.8.9 or newer.
+
 ### Auto Display / Auto Play
 
 When the user asks for something specific (e.g. "show me the Mona Lisa"), the card automatically displays the first result. For broader searches, results appear as a browsable list.
@@ -125,6 +137,7 @@ Each tool is configured as a separate entry via **Settings > Devices & Services 
 | **Video Search** | Enter YouTube Data API v3 key → configure max results |
 | **Weather Forecast** | Select daily weather entity → optionally add hourly entity, temperature, and humidity sensors |
 | **Financial Data** | Select provider (Finnhub) → enter API key |
+| **Entity Card** | Set max entities per card and the history range |
 
 > Only one entry per tool type is allowed. Use **Configure** to change settings, or remove the entry to disable a tool.
 
@@ -183,6 +196,8 @@ No API key required — uses your existing Home Assistant weather entities. You 
 | | Current Humidity Sensor | Includes current humidity in today's/weekly forecast (optional) |
 | **Financial Data** | Provider | Finnhub |
 | | Finnhub API Key | Your API key from [finnhub.io](https://finnhub.io/) |
+| **Entity Card** | Maximum Entities Per Card | 1-12 (default: 6). Extra entities in a request are dropped |
+| | History Range | 1-168 hours (default: 24). How far back the graph goes when history is requested |
 
 ## Troubleshooting
 

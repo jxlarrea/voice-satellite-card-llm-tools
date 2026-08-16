@@ -12,6 +12,7 @@ TOOL_TYPE_WEB_SEARCH = "web_search"
 TOOL_TYPE_WIKIPEDIA = "wikipedia"
 TOOL_TYPE_WEATHER = "weather"
 TOOL_TYPE_FINANCIAL = "financial_data"
+TOOL_TYPE_ENTITY_CARD = "entity_card"
 
 CONF_TOOL_TYPES = {
     TOOL_TYPE_IMAGE_SEARCH: "Image Search",
@@ -20,6 +21,7 @@ CONF_TOOL_TYPES = {
     TOOL_TYPE_WIKIPEDIA: "Wikipedia",
     TOOL_TYPE_WEATHER: "Weather Forecast",
     TOOL_TYPE_FINANCIAL: "Financial Data",
+    TOOL_TYPE_ENTITY_CARD: "Entity Card",
 }
 
 # LLM API identifiers
@@ -77,6 +79,26 @@ WEATHER_SERVICES_PROMPT = (
     "When the user asks about the weather, temperature, or forecast for today, "
     "tomorrow, a specific day of the week, or the upcoming week, use the "
     "get_weather_forecast tool with the appropriate range parameter."
+)
+
+# Entity Card LLM API identifiers
+ENTITY_CARD_API_NAME = "Voice Satellite: Entity Card"
+ENTITY_CARD_API_ID = "voice_satellite_llm_tools_entity_card"
+
+ENTITY_CARD_SERVICES_PROMPT = (
+    "You may use the Entity Card tool to put Home Assistant entities on the "
+    "screen of the device the user is talking to.\n"
+    "- 'show me X', 'display X', 'pull up X', 'let me see X' -> CALL "
+    "show_entity_card with the device name and domain, the same arguments "
+    "you would give HassTurnOn. Do NOT turn anything on.\n"
+    "- Showing a camera -> CALL show_entity_card. Cameras cannot be turned "
+    "on, so a turn-on tool will always fail for them.\n"
+    "- Asking about a trend, history, or how something changed -> CALL "
+    "show_entity_card with display 'history'.\n"
+    "- show_entity_card only displays. It never changes device state, so it "
+    "is never the wrong choice for a request to see something.\n"
+    "The card is a visual extra: always answer in speech as well, since the "
+    "user may not be looking at a screen."
 )
 
 # Provider selection
@@ -198,4 +220,17 @@ WIKIPEDIA_DEFAULTS = {
 VIDEO_SEARCH_DEFAULTS = {
     CONF_YOUTUBE_API_KEY: "",
     CONF_YOUTUBE_NUM_RESULTS: 3,
+}
+
+# Entity Card config keys
+CONF_ENTITY_CARD_MAX_ENTITIES = "entity_card_max_entities"
+CONF_ENTITY_CARD_HISTORY_HOURS = "entity_card_history_hours"
+
+DEFAULT_ENTITY_CARD_MAX_ENTITIES = 6
+DEFAULT_ENTITY_CARD_HISTORY_HOURS = 24
+
+# Entity Card defaults
+ENTITY_CARD_DEFAULTS = {
+    CONF_ENTITY_CARD_MAX_ENTITIES: DEFAULT_ENTITY_CARD_MAX_ENTITIES,
+    CONF_ENTITY_CARD_HISTORY_HOURS: DEFAULT_ENTITY_CARD_HISTORY_HOURS,
 }

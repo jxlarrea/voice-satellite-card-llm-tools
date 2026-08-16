@@ -25,6 +25,8 @@ from homeassistant.helpers.selector import (
 
 from .const import (
     CONF_BRAVE_API_KEY,
+    CONF_ENTITY_CARD_HISTORY_HOURS,
+    CONF_ENTITY_CARD_MAX_ENTITIES,
     CONF_BRAVE_IMAGE_NUM_RESULTS,
     CONF_BRAVE_SAFESEARCH,
     CONF_BRAVE_WEB_NUM_RESULTS,
@@ -56,8 +58,10 @@ from .const import (
     CONF_YOUTUBE_API_KEY,
     CONF_YOUTUBE_NUM_RESULTS,
     DOMAIN,
+    ENTITY_CARD_DEFAULTS,
     FINANCIAL_DEFAULTS,
     IMAGE_SEARCH_DEFAULTS,
+    TOOL_TYPE_ENTITY_CARD,
     TOOL_TYPE_FINANCIAL,
     TOOL_TYPE_IMAGE_SEARCH,
     TOOL_TYPE_VIDEO_SEARCH,
@@ -85,6 +89,7 @@ STEP_WIKIPEDIA = "wikipedia"
 STEP_WEATHER = "weather"
 STEP_FINANCIAL_PROVIDER = "financial_provider"
 STEP_FINNHUB_FINANCIAL = "finnhub_financial"
+STEP_ENTITY_CARD = "entity_card"
 
 SAFESEARCH_OPTIONS = {
     "off": "Off",
@@ -299,6 +304,37 @@ def get_weather_schema(defaults: dict | None = None) -> vol.Schema:
     )
 
 
+def get_entity_card_schema(defaults: dict | None = None) -> vol.Schema:
+    """Schema for Entity Card configuration."""
+    d = defaults or ENTITY_CARD_DEFAULTS
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_ENTITY_CARD_MAX_ENTITIES,
+                default=d.get(
+                    CONF_ENTITY_CARD_MAX_ENTITIES,
+                    ENTITY_CARD_DEFAULTS[CONF_ENTITY_CARD_MAX_ENTITIES],
+                ),
+            ): _num_results_selector(unit="entities", max_val=12),
+            vol.Required(
+                CONF_ENTITY_CARD_HISTORY_HOURS,
+                default=d.get(
+                    CONF_ENTITY_CARD_HISTORY_HOURS,
+                    ENTITY_CARD_DEFAULTS[CONF_ENTITY_CARD_HISTORY_HOURS],
+                ),
+            ): NumberSelector(
+                NumberSelectorConfig(
+                    min=1,
+                    max=168,
+                    step=1,
+                    mode=NumberSelectorMode.BOX,
+                    unit_of_measurement="hours",
+                )
+            ),
+        }
+    )
+
+
 def get_financial_provider_schema() -> vol.Schema:
     """Schema for financial data provider selection step."""
     return vol.Schema(
@@ -420,6 +456,14 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
             return self.async_show_form(
                 step_id=STEP_FINANCIAL_PROVIDER,
                 data_schema=get_financial_provider_schema(),
+            )
+
+        if tool_type == TOOL_TYPE_ENTITY_CARD:
+            if self._existing_entry_for_tool_type(TOOL_TYPE_ENTITY_CARD):
+                return self.async_abort(reason="entity_card_already_configured")
+            return self.async_show_form(
+                step_id=STEP_ENTITY_CARD,
+                data_schema=get_entity_card_schema(),
             )
 
         return self.async_abort(reason="unknown_tool_type")
@@ -622,6 +666,21 @@ class VoiceSatelliteLlmToolsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
         self._abort_if_unique_id_configured()
         return self.async_create_entry(title=title, data=self.config_data)
 
+    async def async_step_entity_card(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Configure Entity Card settings."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id=STEP_ENTITY_CARD,
+                data_schema=get_entity_card_schema(),
+            )
+
+        self.config_data.update(user_input)
+        await self.async_set_unique_id(f"{DOMAIN}_entity_card")
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(title="Entity Card", data=self.config_data)
+
     @staticmethod
     @callback
     def async_get_options_flow(
@@ -664,6 +723,9 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
 
         if tool_type == TOOL_TYPE_FINANCIAL:
             return await self.async_step_financial_provider(user_input)
+
+        if tool_type == TOOL_TYPE_ENTITY_CARD:
+            return await self.async_step_entity_card(user_input)
 
         return self.async_abort(reason="unknown_tool_type")
 
@@ -852,3 +914,14 @@ class VoiceSatelliteLlmToolsOptionsFlow(config_entries.OptionsFlow):
         )
         return self.async_create_entry(data=self.config_data)
 
+    async def async_step_entity_card(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Options: Entity Card settings."""
+        if user_input is None:
+            schema = get_entity_card_schema()
+            schema = self.add_suggested_values_to_schema(schema, self.config_data)
+            return self.async_show_form(step_id=STEP_ENTITY_CARD, data_schema=schema)
+
+        self.config_data.update(user_input)
+        return self.async_create_entry(data=self.config_data)
